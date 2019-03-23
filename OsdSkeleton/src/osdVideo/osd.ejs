@@ -1,0 +1,37 @@
+<style>
+.custom-scrollbar {
+  position: relative;
+  height: 1500px;
+  overflow: auto;
+}
+.table-wrapper-scroll-y {
+  display: block;
+}
+</style>
+<div>
+
+    <div>
+        <div id="currentTime"></div>
+        <% if(config.stopButton) { %>
+            <button id="stop" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-stop"></span></button>
+        <% } if(config.previousButton) { %>
+            <button id="previous" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-step-backward"></button>
+        <% } if(config.backwardButton) {%>
+            <button id="backward" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-backward"></button>
+        <% }if(config.playButton) { %>
+            <button id="play" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-play"></span></button>
+        <% } if(config.pauseButton) { %>
+            <button id="pause" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-pause"></button>
+        <% } if(config.fastforwardButton) {%>
+            <button id="fastforward" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-forward"></button>
+        <% } if(config.nextButton) {%>
+            <button id="next" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-step-forward"></button>
+        <% } %>
+        <span><%=duration%></span>
+
+        <br>
+        <span class="<%= config.indicatorClass  || '' %>" style="font-size:40px"></span>
+    </div>
+  
+    
+</div>
