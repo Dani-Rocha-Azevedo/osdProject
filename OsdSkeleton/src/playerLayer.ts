@@ -1,23 +1,23 @@
 import * as $ from 'jquery'
 import * as _ from 'underscore'
 
-import {OSD} from './osdVideo/osd'
+import {RegularRenderer} from './renderer/regularRenderer'
 import { PlayerState } from './playerStateVideo/playerState';
 import * as Backbone from 'backbone'
 import { PlayingAsset } from './playingAsset';
 
 export class PlayerLayer extends Backbone.View<Backbone.Model>{
-    private osd: OSD
+    private osd: RegularRenderer
     private player: PlayerState
     private eventBus: any
     private playingAsset: PlayingAsset
     private asset: any = [
         {
-            duration : 0,
+            duration : 157.000,
             description: "Pokemon",
             src: "https://test.flowr.cloud/ozone/caw18fZLa9"
         },
-        {   duration: 0,
+        {   duration: 157.000,
             description: "Ralph BD",
             src: "https://test.flowr.cloud/ozone/PURD7oFHye"
         }
@@ -26,9 +26,9 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         super()
         this.playingAsset = new PlayingAsset()
         this.eventBus = _.extend({}, Backbone.Events);
-        this.osd = new OSD({eventBus: this.eventBus, playingAsset: this.playingAsset})
+        this.osd = new RegularRenderer({eventBus: this.eventBus, playingAsset: this.playingAsset})
         this.player = new PlayerState({eventBus: this.eventBus, playingAsset: this.playingAsset, asset: this.asset[0]})
-        $("#player").html(this.player.render().el)
+        $('#player').html(this.player.render().el)
         $('#osd').html(this.osd.render().el)
         this._initEvent()
     }

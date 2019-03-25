@@ -1,0 +1,29 @@
+<style>
+.custom-scrollbar {
+  position: relative;
+  height: 1500px;
+  overflow: auto;
+}
+.table-wrapper-scroll-y {
+  display: block;
+}
+</style>
+<div>
+
+    <div>
+        <span id="currentTime"></span>
+        <div id="stopButton"></div>
+        <div id="playButton"></div>
+        <div id="pauseButton"></div>
+        <div id="fastBackwardButton"></div>
+        <div id="fastForwardButton"></div>
+        <div id="nextButton"></div>
+        <div id="previousButton"></div>
+        <span id="duration"></span>
+
+        <br>
+        <span class="<%= config.indicatorClass  || '' %>" style="font-size:40px"></span>
+    </div>
+  
+    
+</div>

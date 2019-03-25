@@ -22,12 +22,10 @@ export class PlayerState extends Backbone.View<Backbone.Model> {
     constructor(options: any) {
         super(options)
         this._template = require("ejs-compiled-loader!./playerState.ejs")
-        let playerVideo = <HTMLMediaElement> document.getElementById('playerVideo')
         this._stateMachine = new StateMachine()
         this.config = new ConfigOSD("glyphicon glyphicon-play-circle", false, true, true, true, true, true, true)
         this._playingAsset = options.playingAsset
         this._playingAsset.config = this.config
-      //  let myVideo =<HTMLMediaElement>document.getElementById('playerVideo');
         let asset: Asset = new Video(options.asset.description , Math.round(options.asset.duration), options.asset.src)
         this._playingAsset.asset = asset
         this._eventBus.trigger("configChange")
@@ -41,7 +39,6 @@ export class PlayerState extends Backbone.View<Backbone.Model> {
             let myVideo =<HTMLMediaElement>document.getElementById('playerVideo');
             if(myVideo) {
                 this._playingAsset.currentPosition = myVideo.currentTime;
-                (<Video>this._playingAsset.asset).duration = myVideo.duration
             }
         }, 1000)
     }
@@ -69,43 +66,23 @@ export class PlayerState extends Backbone.View<Backbone.Model> {
 
     _play() {
         let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.play(myVideo).then(() => {
-            this._eventBus.trigger("configChange")
-        }).catch( (err) => {
-            this._eventBus.trigger("configChange")
-        })
+        this._stateMachine.play(myVideo)
     }    
     _pause() {
         let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.pause(myVideo).then(() => {
-            this._eventBus.trigger("configChange")
-        }).catch( (err) => {
-            this._eventBus.trigger("configChange")
-        })
+        this._stateMachine.pause(myVideo)
     }
     _stop() {
         let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.stop(myVideo).then(() => {
-            this._eventBus.trigger("configChange")
-        }).catch( (err) => {
-            this._eventBus.trigger("configChange")
-        })
+        this._stateMachine.stop(myVideo)
     }
     _fastFroward() {
         let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.fastForward(myVideo).then(() => {
-            this._eventBus.trigger("configChange")
-        }).catch( (err) => {
-            this._eventBus.trigger("configChange")
-        })
+        this._stateMachine.fastForward(myVideo)
     }
     _backward() {
         let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.backward(myVideo).then(() => {
-            this._eventBus.trigger("configChange")
-        }).catch( (err) => {
-            this._eventBus.trigger("configChange")
-        })
+        this._stateMachine.backward(myVideo)
     }
     /**
       * Diplay the adequate indicator/button
