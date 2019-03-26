@@ -18,6 +18,9 @@ export class Video extends Asset {
         let duration: moment.Duration = moment.duration(this.get('duration'), 'seconds')
         return duration.format("hh:mm:ss", { trim: false })
     }
+    public get duration(): number {
+        return this.get('duration')
+    }
     public set duration(value: number)  {
         this.set('duration', value)
     }

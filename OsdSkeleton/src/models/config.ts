@@ -1,8 +1,9 @@
 import * as Backbone from 'backbone'
+import { Button } from './button';
 export class ConfigOSD extends Backbone.Model{
 
-    constructor(indicatorClass: string, playButton: boolean, stopButton: boolean, pauseButton: boolean,
-         fastBackwardButton: boolean, fastfrowardButton: boolean, nextButton: boolean, previousButton: boolean ) {
+    constructor(indicatorClass: string, playButton: Button, stopButton: Button, pauseButton: Button,
+         fastBackwardButton: Button, fastfrowardButton: Button, nextButton: Button, previousButton: Button ) {
              super()
         this.indicatorClass = indicatorClass
         this.playButton = playButton
@@ -16,34 +17,34 @@ export class ConfigOSD extends Backbone.Model{
     /**
      * Getters and setters
      */
-    public get fastForwardButton(): boolean {
+    public get fastForwardButton(): Button {
         return this.get('fastForwardButton')
     }
-    public set fastForwardButton(value: boolean) {
+    public set fastForwardButton(value: Button) {
         this.set('fastForwardButton', value)
     }
-    public get fastBackwardButton(): boolean {
+    public get fastBackwardButton(): Button {
         return this.get('fastBackwardButton')
     }
-    public set fastBackwardButton(value: boolean) {
+    public set fastBackwardButton(value: Button) {
         this.set('fastBackwardButton', value)
     }
-    public get pauseButton(): boolean {
+    public get pauseButton(): Button {
         return this.get('pauseButton')
     }
-    public set pauseButton(value: boolean) {
+    public set pauseButton(value: Button) {
         this.set('pauseButton', value)
     }
-    public get stopButton(): boolean {
+    public get stopButton(): Button {
         return this.get('stopButton')
     }
-    public set stopButton(value: boolean) {
+    public set stopButton(value: Button) {
         this.set('stopButton', value)
     }
-    public get playButton(): boolean {
+    public get playButton(): Button {
         return this.get('playButton')
     }
-    public set playButton(value: boolean) {
+    public set playButton(value: Button) {
         this.set('playButton', value)
     }
     public get indicatorClass(): string {
@@ -52,16 +53,16 @@ export class ConfigOSD extends Backbone.Model{
     public set indicatorClass(value: string) {
         this.set('indicatorClass', value)
     }
-    public get nextButton(): boolean {
+    public get nextButton(): Button {
         return this.get('nextButton');
     }
-    public set nextButton(value: boolean) {
+    public set nextButton(value: Button) {
         this.set('nextButton', value)
     }
-    public get previousButton(): boolean {
+    public get previousButton(): Button {
         return this.get('previousButton')
     }
-    public set previousButton(value: boolean) {
+    public set previousButton(value: Button) {
         this.set('previousButton', value)
     }
 

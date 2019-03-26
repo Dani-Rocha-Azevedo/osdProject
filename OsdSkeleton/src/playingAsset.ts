@@ -1,11 +1,11 @@
-import { Asset } from "./assets/Asset"
-import { ConfigOSD } from "./config"
+import { Asset } from "./models/assets/Asset"
+import { ConfigOSD } from "./models/config"
 import * as Backbone from "backbone"
 import * as moment from 'moment'
 import 'moment-duration-format'
 export class PlayingAsset extends Backbone.Model{
     
-    constructor(asset?: Asset, config?: ConfigOSD) {
+    constructor(config: ConfigOSD, asset: Asset) {
         super()
         this.asset = asset 
         this.config = config
@@ -14,17 +14,17 @@ export class PlayingAsset extends Backbone.Model{
     }
     
     
-    public get asset(): Asset | undefined {
+    public get asset(): Asset  {
         return this.get('asset');
     }
-    public set asset(value: Asset |undefined) {
+    public set asset(value: Asset ) {
         // it's useful, the view can detect change
         this.set('asset', value)
     }
-    public get config(): ConfigOSD | undefined {
+    public get config(): ConfigOSD  {
         return this.get('config');
     }
-    public set config(value: ConfigOSD | undefined) {
+    public set config(value: ConfigOSD ) {
         this.set('config', value)
     }
     public getCurrentPosition(): string {

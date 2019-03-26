@@ -3,11 +3,11 @@ import * as $ from 'jquery'
 import * as Backbone from 'backbone'
 import {StateMachine} from './StateMachine'
 import {states} from './StateMachine'
-import {ConfigOSD} from '../config'
+import {ConfigOSD} from '../models/config'
 import { PlayingAsset } from '../playingAsset';
-import { Video } from '../assets/Video';
-import {Asset} from '../assets/Asset';
-import * as moment from 'moment'
+import { Video } from '../models/assets/Video';
+import {Asset} from '../models/assets/Asset';
+import { Button } from '../models/button';
 export class PlayerState extends Backbone.View<Backbone.Model> {
     private _stateMachine: StateMachine
     private _template: any
@@ -23,7 +23,9 @@ export class PlayerState extends Backbone.View<Backbone.Model> {
         super(options)
         this._template = require("ejs-compiled-loader!./playerState.ejs")
         this._stateMachine = new StateMachine()
-        this.config = new ConfigOSD("glyphicon glyphicon-play-circle", false, true, true, true, true, true, true)
+        this.config = new ConfigOSD("glyphicon glyphicon-play-circle", new Button(false, false), 
+            new Button(true, false), new Button(true, false), new Button(true, false), 
+            new Button(true, false), new Button(true, false), new Button(true, false))
         this._playingAsset = options.playingAsset
         this._playingAsset.config = this.config
         let asset: Asset = new Video(options.asset.description , Math.round(options.asset.duration), options.asset.src)
@@ -91,42 +93,45 @@ export class PlayerState extends Backbone.View<Backbone.Model> {
      _onEnterState() {
         this._stateMachine.onEnterState(states.PAUSED, () => {
             this.config.indicatorClass = "glyphicon glyphicon-pause"
-            this.config.pauseButton = false
-            this.config.playButton = true
+            this.config.pauseButton.display = false
+            this.config.playButton.display = true
         })
         this._stateMachine.onEnterState(states.STOPPED, () => {
             this.config.indicatorClass = "glyphicon glyphicon-stop"
-            this.config.playButton = false
+            this.config.playButton.display = false
         })
         this._stateMachine.onEnterState(states.PLAYING, () => {
             this.config.indicatorClass = "glyphicon glyphicon-play-circle"
-            this.config.playButton = false
-            this.config.pauseButton = true
+            this.config.playButton.display = false
+            this.config.pauseButton.active = false
+            this.config.pauseButton.display = true
         })
         this._stateMachine.onEnterState(states.BACKWARDING, () => {
             this.config.indicatorClass = "glyphicon glyphicon-fast-backward"
-            this.config.pauseButton = false
+            this.config.pauseButton.display = false
+            this.config.fastBackwardButton.active = true
         })
         this._stateMachine.onEnterState(states.FASTFORWARDING, () => {
             this.config.indicatorClass = "glyphicon glyphicon-fast-forward"
-            this.config.pauseButton = false
+            this.config.pauseButton.display = false
+            this.config.fastForwardButton.active = true
         })
     }
     _onLeaveState() {
        this._stateMachine.onLeaveState(states.STOPPED, () => {
-           this.config.stopButton = true
+           this.config.stopButton.display = true
        })
        this._stateMachine.onLeaveState(states.PAUSED, () => {
-           this.config.pauseButton = true
+           this.config.pauseButton.display = true
        })
        this._stateMachine.onLeaveState(states.PLAYING, () => {
-           this.config.playButton = true
+           this.config.playButton.display = true
        })
        this._stateMachine.onLeaveState(states.BACKWARDING, () => {
-           this.config.pauseButton = true
+           this.config.fastBackwardButton.active = false
        })
        this._stateMachine.onLeaveState(states.FASTFORWARDING, () => {
-           this.config.pauseButton = true
+           this.config.fastForwardButton.active = false
        })
    }
 }

@@ -1,13 +1,15 @@
 import * as $ from 'jquery'
 import * as _ from 'underscore'
 
-import {RegularRenderer} from './renderer/regularRenderer'
-import { PlayerState } from './playerStateVideo/playerState';
+import { PlayerState } from './playerState/playerState';
 import * as Backbone from 'backbone'
 import { PlayingAsset } from './playingAsset';
-
+import { ConfigOSD } from './models/config';
+import { OsdLayer } from './OsdLayer';
+import { Video } from './models/assets/Video';
+import {Button} from './models/button'
 export class PlayerLayer extends Backbone.View<Backbone.Model>{
-    private osd: RegularRenderer
+    private osd: OsdLayer
     private player: PlayerState
     private eventBus: any
     private playingAsset: PlayingAsset
@@ -24,9 +26,13 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
     ]
     constructor() {
         super()
-        this.playingAsset = new PlayingAsset()
+        // a revoir
+        this.playingAsset = new PlayingAsset(new ConfigOSD("glyphicon glyphicon-play-circle", new Button(false, false), 
+        new Button(true, false), new Button(true, false), new Button(true, false), 
+        new Button(true, false), new Button(true, false), new Button(true, false))
+            , new Video(this.asset[0].description, this.asset[0].duration, this.asset[0].src))
         this.eventBus = _.extend({}, Backbone.Events);
-        this.osd = new RegularRenderer({eventBus: this.eventBus, playingAsset: this.playingAsset})
+        this.osd = new OsdLayer({eventBus: this.eventBus, playingAsset: this.playingAsset})
         this.player = new PlayerState({eventBus: this.eventBus, playingAsset: this.playingAsset, asset: this.asset[0]})
         $('#player').html(this.player.render().el)
         $('#osd').html(this.osd.render().el)

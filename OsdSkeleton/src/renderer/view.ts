@@ -106,6 +106,7 @@ export class StopButtonView extends Backbone.View<Backbone.Model> {
         this.display = "none"
         this.render()
     }
+
     render() {
         this.$el.html(this.template({display: this.display}))
         return this
@@ -138,7 +139,12 @@ export class PauseButtonView extends Backbone.View<Backbone.Model> {
         this.display = "none"
         this.render()
     }
-
+    activeButton() {
+        console.log("active backward")
+    }
+    desactivateButton() {
+        console.log("desactivate backward")
+    }
     render() {
         this.$el.html(this.template({display: this.display}))
         return this
@@ -150,10 +156,11 @@ export class PauseButtonView extends Backbone.View<Backbone.Model> {
 export class FastBackwardButton extends Backbone.View<Backbone.Model> {
     private template: any
     private display: string
-
+    private active: string
     initialize() {
         this.template = require("ejs-compiled-loader!./view/fastBackwardButton.ejs")
         this.display = "none"
+        this.active = "btn-primary"
     }
 
     /**
@@ -172,8 +179,23 @@ export class FastBackwardButton extends Backbone.View<Backbone.Model> {
         this.display = "none"
         this.render()
     }
+        
+    /**
+     * add a style from the button
+     */
+    activeButton() {
+       this.active = "btn-warning"
+       this.render()
+    }
+    /**
+     * remove a style from the button
+     */
+    desactivateButton() {
+        this.active = "btn-primary"
+        this.render()
+    }
     render() {
-        this.$el.html(this.template({display: this.display}))
+        this.$el.html(this.template({active: this.active, display: this.display}))
         return this
     }
 }
@@ -183,10 +205,11 @@ export class FastBackwardButton extends Backbone.View<Backbone.Model> {
 export class FastForwardButtonView extends Backbone.View<Backbone.Model> {
     private template: any
     private display: string
-
+    private active: string
     initialize() {
         this.template = require("ejs-compiled-loader!./view/fastForwardButton.ejs")
         this.display = "none"
+        this.active = "btn-primary"
     }
  
     /**
@@ -205,8 +228,22 @@ export class FastForwardButtonView extends Backbone.View<Backbone.Model> {
         this.display = "none"
         this.render()
     }
+    /**
+     * add a style from the button
+     */
+    activeButton() {
+        this.active = "btn-warning"
+        this.render()
+    }
+    /**
+     * remove a style from the button
+     */
+    desactivateButton() {
+        this.active = "btn-primary"
+        this.render()
+    }
     render() {
-        this.$el.html(this.template({display: this.display}))
+        this.$el.html(this.template({active: this.active, display: this.display}))
         return this
     }
 }
