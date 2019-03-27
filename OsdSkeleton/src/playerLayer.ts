@@ -11,43 +11,51 @@ import {Button} from './models/button'
 export class PlayerLayer extends Backbone.View<Backbone.Model>{
     private osd: OsdLayer
     private player: PlayerState
-    private eventBus: any
-    private playingAsset: PlayingAsset
-    private asset: any = [
-        {
-            duration : 157.000,
-            description: "Pokemon",
-            src: "https://test.flowr.cloud/ozone/caw18fZLa9"
-        },
-        {   duration: 157.000,
-            description: "Ralph BD",
-            src: "https://test.flowr.cloud/ozone/PURD7oFHye"
-        }
-    ]
-    constructor() {
+    private _eventBus: any
+    private _playingAsset: PlayingAsset
+    private _assets: Array<any>
+    constructor(options: any) {
         super()
         // a revoir
-        this.playingAsset = new PlayingAsset(new ConfigOSD("glyphicon glyphicon-play-circle", new Button(false, false), 
-        new Button(true, false), new Button(true, false), new Button(true, false), 
-        new Button(true, false), new Button(true, false), new Button(true, false))
-            , new Video(this.asset[0].description, this.asset[0].duration, this.asset[0].src))
-        this.eventBus = _.extend({}, Backbone.Events);
-        this.osd = new OsdLayer({eventBus: this.eventBus, playingAsset: this.playingAsset})
-        this.player = new PlayerState({eventBus: this.eventBus, playingAsset: this.playingAsset, asset: this.asset[0]})
+        this._eventBus = options.eventBus
+        this._assets = options.assets
+        this._playingAsset = options.playingAsset
+        this.player = new PlayerState({playingAsset: this._playingAsset, asset: this._assets[0]})
         $('#player').html(this.player.render().el)
-        $('#osd').html(this.osd.render().el)
         this._initEvent()
     }
     _initEvent() {
-        this.eventBus.on("next", this._next, this)
-        this.eventBus.on("previous", this._previous, this)
+        this._eventBus.on("next", this._next, this)
+        this._eventBus.on("previous", this._previous, this)
+        this._eventBus.on("play", this._play, this)
+        this._eventBus.on("stop", this._stop, this)
+        this._eventBus.on("pause", this._pause, this)
+        this._eventBus.on("backward", this._fastBackward, this)
+        this._eventBus.on("fastForward", this._fastForward, this)
     }
-    _next() {
-        this.player = new PlayerState({eventBus: this.eventBus, playingAsset: this.playingAsset, asset: this.asset[1]})
+    private _next() {
+        this.player = new PlayerState({_eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets[1]})
         $("#player").html(this.player.render().el)
     }
-    _previous() {
-        this.player = new PlayerState({eventBus: this.eventBus, playingAsset: this.playingAsset, asset: this.asset[0]})
+    private _previous() {
+        this.player = new PlayerState({_eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets[0]})
         $("#player").html(this.player.render().el)
     }
+    private _play() {
+        this.player.play()
+    }
+    private _stop() {
+        this.player.stop()
+    }
+    private _pause() {
+        this.player.pause()
+    }
+    private _fastBackward() {
+        this.player.fastBackward()
+    }
+    private _fastForward() {
+        this.player.fastForward()
+    }
+
+   
 }

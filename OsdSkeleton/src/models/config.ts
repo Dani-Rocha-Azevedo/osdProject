@@ -1,11 +1,11 @@
 import * as Backbone from 'backbone'
 import { Button } from './button';
+import { timingSafeEqual } from 'crypto';
 export class ConfigOSD extends Backbone.Model{
 
-    constructor(indicatorClass: string, playButton: Button, stopButton: Button, pauseButton: Button,
+    constructor(playButton: Button, stopButton: Button, pauseButton: Button,
          fastBackwardButton: Button, fastfrowardButton: Button, nextButton: Button, previousButton: Button ) {
              super()
-        this.indicatorClass = indicatorClass
         this.playButton = playButton
         this.pauseButton = pauseButton
         this.stopButton = stopButton
@@ -47,12 +47,6 @@ export class ConfigOSD extends Backbone.Model{
     public set playButton(value: Button) {
         this.set('playButton', value)
     }
-    public get indicatorClass(): string {
-        return this.get('indicatorClass')
-    }
-    public set indicatorClass(value: string) {
-        this.set('indicatorClass', value)
-    }
     public get nextButton(): Button {
         return this.get('nextButton');
     }
@@ -82,22 +76,93 @@ export class ConfigOSD extends Backbone.Model{
         }
         return config
     }
-    // public hideAllButtons(): void {
-    //     this._playButton = false
-    //     this._stopButton = false
-    //     this._pauseButton = false
-    //     this._fastBackwardButton = false
-    //     this._fastForwardButton = false
-    //     this._nextButton = false
-    //     this._previousButton = false
-    // }
-    // public showAllButtons(): void {
-    //     this._playButton = true
-    //     this._stopButton = true
-    //     this._pauseButton = true
-    //     this._fastBackwardButton = true
-    //     this._fastForwardButton = true
-    //     this._nextButton = true
-    //     this._previousButton = true
-    // }
+    /**
+     * Hide all buttons
+     */
+    public hideAllButtons() {
+        this.get('playButton').display = false
+        this.get('pauseButton').display = false
+        this.get('stopButton').display = false
+        this.get('fastBackwardButton').display = false
+        this.get('fastForwardButton').display = false
+        this.get('nextButton').display = false
+        this.get('previousButton').display = false
+    }
+    /**
+     * display all buttons
+     */
+    // TODO display the button according to configAdmin
+    public diplayAllButtons() {
+        this.get('playButton').display = true
+        this.get('pauseButton').display = true
+        this.get('stopButton').display = true
+        this.get('fastBackwardButton').display = true
+        this.get('fastForwardButton').display = true
+        this.get('nextButton').display = true
+        this.get('previousButton').display = true
+    }
+}
+export class ConfigAdmin {
+    private _playButton: boolean
+    private _pauseButton: boolean
+    private _stopButton: boolean
+    private _fastBackwardButton: boolean
+    private _fastForwardButton: boolean
+    private _nextButton: boolean
+    private _previousButton: boolean
+    constructor(playButton: boolean, stopButton: boolean, pauseButton: boolean,
+        fastBackwardButton: boolean, fastfrowardButton: boolean, nextButton: boolean, previousButton: boolean ) {
+       this._playButton = playButton
+       this._pauseButton = pauseButton
+       this._stopButton = stopButton
+       this._fastBackwardButton = fastBackwardButton
+       this._fastForwardButton = fastfrowardButton
+       this._nextButton = nextButton
+       this._previousButton = previousButton
+   }
+   /**
+    * Getters and setters
+    */
+   public get fastForwardButton(): boolean {
+       return this._fastForwardButton
+   }
+   public set fastForwardButton(value: boolean) {
+       this.fastForwardButton = value
+   }
+   public get fastBackwardButton(): boolean {
+       return this._fastBackwardButton
+   }
+   public set fastBackwardButton(value: boolean) {
+       this._fastBackwardButton = value
+   }
+   public get pauseButton(): boolean {
+       return this._pauseButton
+   }
+   public set pauseButton(value: boolean) {
+       this._pauseButton = value
+   }
+   public get stopButton(): boolean {
+       return this._stopButton
+   }
+   public set stopButton(value: boolean) {
+       this.stopButton = value
+   }
+   public get playButton(): boolean {
+       return this._playButton
+   }
+   public set playButton(value: boolean) {
+       this._playButton = value 
+   }
+   public get nextButton(): boolean {
+       return this._nextButton
+   }
+   public set nextButton(value: boolean) {
+       this._nextButton = value
+   }
+   public get previousButton(): boolean {
+       return this._previousButton
+   }
+   public set previousButton(value: boolean) {
+       this._previousButton = value
+   }
 }

@@ -1,13 +1,15 @@
 import * as _ from 'underscore'
-import * as $ from 'jquery'
 import * as Backbone from 'backbone'
 import {Video} from '../models/assets/Video'
 import {LeftTimeView, StopButtonView, PlayButtonView, 
-    FastForwardButtonView, FastBackwardButton, NextButtonView, PreviousButtonView} from './view'
+    FastForwardButtonView, FastBackwardButton, NextButtonView, PreviousButtonView, ProgressBarView} from './view'
 import {RightTimeView} from './view'
 import {PauseButtonView} from './view'
 import { Asset } from '../models/assets/Asset';
 import { Button } from '../models/button';
+import * as moment from 'moment';
+import 'moment-duration-format';
+
 export class RegularRenderer extends Backbone.View<Backbone.Model> {
     private _template: any
     private _eventBus: any
@@ -22,6 +24,7 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> {
     private _fastBackwardButton: FastBackwardButton
     private _nextButton: NextButtonView
     private _previousButton: PreviousButtonView
+    private _progressBar: ProgressBarView
     constructor(asset: Asset) {
         super()
         this._duration = (<Video>asset).getDuration()
@@ -37,14 +40,21 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> {
         this._fastForwardButton = new FastForwardButtonView()
         this._nextButton = new NextButtonView()
         this._previousButton = new PreviousButtonView()
+        this._progressBar = new ProgressBarView()
     }
     /**
      * Current position updated
      */
     leftTime(value: string) {
         this._currentTimeView.updateCurrentTime(value)
+        this._updateProgressBar(value)
     }
-
+    private _updateProgressBar(currentTime: string){
+        let current = moment.duration(currentTime).asSeconds()
+        let duration = moment.duration(this._duration).asSeconds()
+        let percent = current * 100 / duration
+        this._progressBar.updatePercent(percent)
+    }
     render() {
             this.$el.html(this._template())
             this.$("#duration").html(this._durationView.render().el)
@@ -57,6 +67,7 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> {
             this.$("#fastBackwardButton").html(this._fastBackwardButton.render().el)
             this.$("#nextButton").html(this._nextButton.render().el)
             this.$("#previousButton").html(this._previousButton.render().el)
+            this.$("#progressBar").html(this._progressBar.render().el)
         
         return this
     }
@@ -101,7 +112,7 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> {
      * hide or display fastForward button
      */
     public updateFastForwardButton(value: Button) {
-        if(value) {
+        if(value.display) {
             this._fastForwardButton.showButton()
             if(value.active) {
                 this._fastForwardButton.activeButton()
@@ -119,7 +130,7 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> {
      * hide or display fastBackward button
      */
     public updateFastBackwardButton(value: Button) {
-        if(value) {
+        if(value.display) {
             this._fastBackwardButton.showButton()
             if(value.active) {
                 this._fastBackwardButton.activeButton()
@@ -136,7 +147,7 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> {
      * hide or display next button
      */
     public updateNextButton(value: Button) {
-        if(value) {
+        if(value.display) {
             this._nextButton.showButton()
         }
         else {
@@ -147,7 +158,7 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> {
      * hide or display previous button
      */
     public updatePreviousButton(value: Button) {
-        if(value) {
+        if(value.display) {
             this._previousButton.showButton()
         }
         else {

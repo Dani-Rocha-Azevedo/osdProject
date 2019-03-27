@@ -313,3 +313,23 @@ export class PreviousButtonView extends Backbone.View<Backbone.Model> {
         return this
     }
 }
+export class ProgressBarView extends Backbone.View<Backbone.Model> {
+    private _template: any
+    private percent: number
+    initialize() {
+        this._template = require("ejs-compiled-loader!./view/ProgressBar.ejs")
+        this.percent = 0
+    }
+    /**
+     * update the percentage
+     */
+    public updatePercent(value: number) {
+        this.percent = value
+        this.render()
+    }
+    render() {
+        this.$el.html(this._template({percent: this.percent}))
+        return this
+    }
+
+}

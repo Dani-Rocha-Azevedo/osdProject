@@ -35,7 +35,7 @@ export class StateMachine extends StateMachineImpl<State> {
     /**
      * start the content
      */
-    @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING], "you can't launch content in stopped/playing state")
+    @checkStateIn([states.STOPPED,states.PAUSED, states.BACKWARDING, states.FASTFORWARDING], "you can't launch content in playing state")
     public play(video: HTMLMediaElement ): Promise<any> {
         return new Promise ((resolve, reject) => {
             try {
@@ -65,6 +65,9 @@ export class StateMachine extends StateMachineImpl<State> {
                 if (this.interval) {
                     clearInterval(this.interval)
                 }
+                // reload the video
+                video.load()
+                video.pause()
                 this.setState(states.STOPPED)
                 resolve("Stop movie")
             }catch(err) {
@@ -106,6 +109,7 @@ export class StateMachine extends StateMachineImpl<State> {
                     clearInterval(this.interval)
                 }
                 video.playbackRate = 1.5
+                video.play()
                 this.setState(states.FASTFORWARDING)
                 resolve("Fasforward movie")
             }catch(err) {
@@ -133,6 +137,7 @@ export class StateMachine extends StateMachineImpl<State> {
                     }
                     else {
                         video.currentTime += -.1
+                        video.play()
                     }
                 }, 20)
                 resolve("Backward movie")
