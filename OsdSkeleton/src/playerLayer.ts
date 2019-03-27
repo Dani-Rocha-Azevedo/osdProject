@@ -8,6 +8,7 @@ import { OsdLayer } from './osd/osdLayer';
 import { IPlayerState } from './playerState/IPlayerState';
 import { PlayerStateFactory } from './playerState/playerStateFactory';
 import { Stack } from './utils/stack';
+import { states } from './utils/constants';
 export class PlayerLayer extends Backbone.View<Backbone.Model>{
     private osd: OsdLayer
     private playerState: IPlayerState
@@ -24,6 +25,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         this._playingAsset = options.playingAsset
         this.playerStateFactory = new PlayerStateFactory()
         this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getNext()})
+        this.listenTo(this._playingAsset,'change:state', this._stateUpdated)
         $('#player').html(this.playerState.render().el)
         this._initEvent()
     }
@@ -36,31 +38,63 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         this._eventBus.on("backward", this._fastBackward, this)
         this._eventBus.on("fastForward", this._fastForward, this)
     }
+    /**
+     * Demand to playerStateFactory a new PlayerState and give the next asset to play
+     */
     private _next() {
         this.playerState.removeView()
         this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getNext()})
         $("#player").html(this.playerState.render().el)
     }
+     /**
+     * Demand to playerStateFactory a new PlayerState and give the previous asset to play
+     */
     private _previous() {
         this.playerState.removeView()
         this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getPrevious()})
         $("#player").html(this.playerState.render().el)
     }
+     /**
+     * Demand to playerState to play the asset 
+     */
     private _play() {
         this.playerState.play()
     }
+    /**
+     * Remove the playerView and return in the previous menu
+     */
     private _stop() {
-        this.playerState.stop()
+        this.playerState.removeView()
+        //this.playerState.stop()
     }
+    /**
+     * Demand to playerState to pause the asset
+     */
     private _pause() {
         this.playerState.pause()
     }
+    /**
+     * Demand to playerState to rewind the asset
+     */
     private _fastBackward() {
         this.playerState.fastBackward()
     }
+    /**
+     * Demand to playerState to forward the asset 
+     */
     private _fastForward() {
         this.playerState.fastForward()
     }
-
+    /**
+     * Launch when the state is updated
+     * The state is stopped, launch the function "next"
+     * The state isn't stopped, do nothing
+     */
+    private _stateUpdated() {
+        if(this._playingAsset.state == states.STOPPED) {
+            //TODO if the playlist is in loop mode
+            this._next()
+        }
+    }
    
 }

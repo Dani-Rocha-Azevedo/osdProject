@@ -29,9 +29,12 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
 
     _updateCurrentTime() {
         this._interval = setInterval(() => {
-            let myVideo =<HTMLMediaElement>document.getElementById('playerVideo');
-            if(myVideo) {
-                this._playingAsset.currentPosition = myVideo.currentTime;
+            let domVideo =<HTMLMediaElement>document.getElementById('playerVideo');
+            if(domVideo) {
+                this._playingAsset.currentPosition = domVideo.currentTime;
+            }
+            if(domVideo.currentTime >= ((<FrontEndVideo>this._playingAsset.asset).duration)) {
+                this._videoEnded()
             }
         }, 1000)
     }
@@ -39,11 +42,12 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
         if(this._playingAsset.asset) {
             this.$el.html(this._template({src: this._playingAsset.asset.src}))
         }
+        
         return this
     }
     public play(): IPlayerState {
-        let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.play(myVideo).then(() => {
+        let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
+        this._stateMachine.play(domVideo).then(() => {
             this._playingAsset.state = states.PLAYING
         }).catch((err) => {
             console.log(err)
@@ -51,8 +55,8 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
         return this
     }
     public stop(): IPlayerState {
-        let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.stop(myVideo).then(() => {
+        let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
+        this._stateMachine.stop(domVideo).then(() => {
             this._playingAsset.state = states.STOPPED
         }).catch((err) => {
             console.log(err)
@@ -60,8 +64,8 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
         return this
     }
     public pause(): IPlayerState {
-        let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.pause(myVideo).then(() => {
+        let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
+        this._stateMachine.pause(domVideo).then(() => {
             this._playingAsset.state = states.PAUSED
         }).catch((err) => {
             console.log(err)
@@ -69,8 +73,8 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
         return this
     }
     public fastForward(): IPlayerState {
-        let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.fastForward(myVideo).then(() => {
+        let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
+        this._stateMachine.fastForward(domVideo).then(() => {
             this._playingAsset.state = states.FASTFORWARDING
         }).catch((err) => {
             console.log(err)
@@ -78,8 +82,8 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
         return this
     }
     public fastBackward(): IPlayerState {
-        let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.backward(myVideo).then(() => {
+        let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
+        this._stateMachine.backward(domVideo).then(() => {
             this._playingAsset.state = states.BACKWARDING
         }).catch((err) => {
             console.log(err)
@@ -89,6 +93,12 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
     public removeView(): void {
         clearInterval(this._interval)
         this.remove()
+    }
+    /**
+     * Launch when the video's finished
+     */
+    private _videoEnded() {
+        this._playingAsset.state = states.STOPPED
     }
 
    

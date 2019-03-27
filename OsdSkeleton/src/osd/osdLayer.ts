@@ -115,13 +115,13 @@ export class OsdLayer extends Backbone.View<any> {
         this._stateMachine.onLeaveState(states.BACKWARDING, ()=> {
             this._configToDisplay.fastBackwardButton.active = false
         })
-        this._stateMachine.onLeaveState(states.STOPPED, ()=> {
-            this._configToDisplay.stopButton.display = true
-        })
+        // this._stateMachine.onLeaveState(states.STOPPED, ()=> {
+        //     this._configToDisplay.stopButton.display = true
+        // })
     }
     private _onEnterState() {
         this._stateMachine.onEnterState(states.PLAYING, ()=> {
-            this._configToDisplay.diplayAllButtons()// when the user click on stop 
+            //this._configToDisplay.diplayAllButtons()// when the user click on stop 
             this._configToDisplay.playButton.display = false
             if(this._configAdmin.pauseButton) {
                 this._configToDisplay.pauseButton.display = true
@@ -147,10 +147,10 @@ export class OsdLayer extends Backbone.View<any> {
                 this._configToDisplay.playButton.display = true
             }
         })
-        this._stateMachine.onEnterState(states.STOPPED, ()=> {
-            this._configToDisplay.hideAllButtons()
-            this._configToDisplay.playButton.display = true
-        })
+        // this._stateMachine.onEnterState(states.STOPPED, ()=> {
+        //     this._configToDisplay.hideAllButtons()
+        //     this._configToDisplay.playButton.display = true
+        // })
     }
     private _configToDisplayUpdated() {
         this.listenTo(this._configToDisplay.playButton, 'change', this._updatePlayButton)

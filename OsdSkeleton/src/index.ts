@@ -15,7 +15,7 @@ export class LayerManager extends Backbone.View<Backbone.Model> {
     private _playingAsset: PlayingAsset
     private _assets: any = [
         {
-            duration : 157.000,
+            duration : 155.000,
             description: "Pokemon",
             src: "https://test.flowr.cloud/ozone/caw18fZLa9",
             type: assetsType.VIDEO
