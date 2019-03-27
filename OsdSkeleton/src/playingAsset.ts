@@ -1,32 +1,27 @@
-import { Asset } from "./models/assets/Asset"
-import { ConfigOSD, ConfigAdmin } from "./models/config"
+import { FrontEndAsset } from "./models/assets/FrontEndAsset"
 import * as Backbone from "backbone"
 import * as moment from 'moment'
+import {states} from './utils/constants'
 import 'moment-duration-format'
+import { fsm } from 'typescript-state-machine'
+import State = fsm.State
 export class PlayingAsset extends Backbone.Model{
     
-    constructor(config: ConfigAdmin, asset: Asset, state: string) {
+    constructor(asset: FrontEndAsset, state: State) {
         super()
         this.state = state 
         this.asset = asset 
-        this.config = config
         this.currentPosition = 0
         
     }
     
     
-    public get asset(): Asset  {
+    public get asset(): FrontEndAsset  {
         return this.get('asset');
     }
-    public set asset(value: Asset ) {
+    public set asset(value: FrontEndAsset ) {
         // it's useful, the view can detect change
         this.set('asset', value)
-    }
-    public get config(): ConfigAdmin  {
-        return this.get('config');
-    }
-    public set config(value: ConfigAdmin ) {
-        this.set('config', value)
     }
     public getCurrentPosition(): string {
         let duration: moment.Duration = moment.duration(this.get('currentPosition'), 'seconds')
@@ -35,10 +30,10 @@ export class PlayingAsset extends Backbone.Model{
     public set currentPosition(value: number) {
         this.set('currentPosition', value)
     }
-    public set state(value: string) {
+    public set state(value: State) {
         this.set('state', value)
     }
-    public get state(): string {
+    public get state(): State {
         return this.get('state')
     }
 

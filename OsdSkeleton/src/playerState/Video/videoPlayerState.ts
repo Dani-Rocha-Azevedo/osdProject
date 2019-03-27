@@ -1,15 +1,13 @@
 import * as _ from 'underscore'
 import * as $ from 'jquery'
 import * as Backbone from 'backbone'
-import {StateMachine} from './StateMachine'
-import {states} from './StateMachine'
-import {ConfigOSD} from '../models/config'
-import { PlayingAsset } from '../playingAsset';
-import { Video } from '../models/assets/Video';
-import {Asset} from '../models/assets/Asset';
-import { Button } from '../models/button';
-import { StateConst } from '../utils/const';
-export class PlayerState extends Backbone.View<Backbone.Model> {
+import {StateMachine} from './videoStateMachine'
+import { PlayingAsset } from '../../playingAsset';
+import { FrontEndVideo } from '../../models/assets/FrontEndVideo';
+import {FrontEndAsset} from '../../models/assets/FrontEndAsset';
+import { states } from '../../utils/constants';
+import { IPlayerState } from '../IPlayerState';
+export class VideoPlayerState extends Backbone.View<Backbone.Model> implements IPlayerState{ 
     private _stateMachine: StateMachine
     private _template: any
     private _playingAsset: PlayingAsset
@@ -20,14 +18,12 @@ export class PlayerState extends Backbone.View<Backbone.Model> {
      */
     constructor(options: any) {
         super(options)
-        this._template = require("ejs-compiled-loader!./playerState.ejs")
+        this._template = require("ejs-compiled-loader!./videoPlayerState.ejs")
         this._stateMachine = new StateMachine()
         this._playingAsset = options.playingAsset
-        let asset: Asset = new Video(options.asset.description , Math.round(options.asset.duration), options.asset.src)
+        let asset: FrontEndAsset = new FrontEndVideo(options.asset.description , Math.round(options.asset.duration), options.asset.src)
         this._playingAsset.asset = asset
-        // this._onEnterState()
-        // this._onLeaveState()
-        this._playingAsset.state = StateConst.PLAYING
+        this._playingAsset.state = states.PLAYING
         this._updateCurrentTime()
     }
 
@@ -45,45 +41,55 @@ export class PlayerState extends Backbone.View<Backbone.Model> {
         }
         return this
     }
-
-    public play() {
+    public play(): IPlayerState {
         let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
         this._stateMachine.play(myVideo).then(() => {
-            this._playingAsset.state = StateConst.PLAYING
+            this._playingAsset.state = states.PLAYING
         }).catch((err) => {
             console.log(err)
         })
-    }    
-    public pause() {
-        let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.pause(myVideo).then(() => {
-            this._playingAsset.state = StateConst.PAUSED
-        }).catch((err) => {
-            console.log(err)
-        })
+        return this
     }
-    public stop() {
+    public stop(): IPlayerState {
         let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
         this._stateMachine.stop(myVideo).then(() => {
-            this._playingAsset.state = StateConst.STOPPED
+            this._playingAsset.state = states.STOPPED
         }).catch((err) => {
             console.log(err)
         })
+        return this
     }
-    public fastForward() {
+    public pause(): IPlayerState {
+        let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
+        this._stateMachine.pause(myVideo).then(() => {
+            this._playingAsset.state = states.PAUSED
+        }).catch((err) => {
+            console.log(err)
+        })
+        return this
+    }
+    public fastForward(): IPlayerState {
         let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
         this._stateMachine.fastForward(myVideo).then(() => {
-            this._playingAsset.state = StateConst.FORWARDING
+            this._playingAsset.state = states.FASTFORWARDING
         }).catch((err) => {
             console.log(err)
         })
+        return this
     }
-    public fastBackward() {
+    public fastBackward(): IPlayerState {
         let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
         this._stateMachine.backward(myVideo).then(() => {
-            this._playingAsset.state = StateConst.BACKWARDING
+            this._playingAsset.state = states.BACKWARDING
         }).catch((err) => {
             console.log(err)
         })
+        return this
     }
+    public removeView(): void {
+        clearInterval(this._interval)
+        this.remove()
+    }
+
+   
 }

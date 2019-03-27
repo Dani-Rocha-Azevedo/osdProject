@@ -1,5 +1,5 @@
 import * as Backbone from 'backbone'
-export abstract class Asset extends Backbone.Model{
+export abstract class FrontEndAsset extends Backbone.Model{
   
     constructor(type: string, description: string, src: string) {
         super()

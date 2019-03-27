@@ -1,22 +1,16 @@
-import * as _ from 'underscore'
 import * as Backbone from 'backbone'
-import { FrontEndVideo } from '../models/assets/FrontEndVideo'
-import {LeftTimeView, StopButtonView, PlayButtonView, 
-    FastForwardButtonView, FastBackwardButton, NextButtonView, PreviousButtonView, ProgressBarView} from './view/view'
-import {RightTimeView} from './view/view'
-import {PauseButtonView} from './view/view'
+import { LeftTimeView, RightTimeView, PauseButtonView, StopButtonView, PlayButtonView, FastForwardButtonView, FastBackwardButton, NextButtonView, PreviousButtonView, LiveView } from './view/view';
 import { FrontEndAsset } from '../models/assets/FrontEndAsset';
-import { Button } from '../models/button';
-import * as moment from 'moment';
-import 'moment-duration-format';
+import { FrontEndLiveChannel } from '../models/assets/FrontEndLiveChannel';
 import { IRenderer } from './IRenderer';
-
-export class RegularRenderer extends Backbone.View<Backbone.Model> implements IRenderer {
+import { Button } from '../models/button';
+export class LiveChannelRenderer extends Backbone.View<Backbone.Model> implements IRenderer{
     private _template: any
-    private _duration: string
-    // The views
-    private _currentTimeView: LeftTimeView
-    private _durationView: RightTimeView
+    private _startTime: any
+    private _endTime: any
+    // VIEW
+    private _startTimeView: LeftTimeView
+    private _endTimeView: RightTimeView
     private _pauseButton: PauseButtonView
     private _stopButton: StopButtonView
     private _playButton: PlayButtonView
@@ -24,16 +18,18 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
     private _fastBackwardButton: FastBackwardButton
     private _nextButton: NextButtonView
     private _previousButton: PreviousButtonView
-    private _progressBar: ProgressBarView
+    private _liveView: LiveView
     constructor(asset: FrontEndAsset) {
         super()
-        this._duration = (<FrontEndVideo>asset).getDuration()
-        this._durationView.updateRightTime(this._duration)
+        this._startTime = (<FrontEndLiveChannel> asset).getStartTime()
+        this._endTime = (<FrontEndLiveChannel> asset).getEndTime()
+        this.updateLeftTime(this._startTime)
+        this.updateRightTime(this._endTime)
     }
     initialize() {
-        this._template = require("ejs-compiled-loader!./regularRenderer.ejs")
-        this._currentTimeView = new LeftTimeView()
-        this._durationView = new RightTimeView()
+        this._template = require("ejs-compiled-loader!./liveChannelRenderer.ejs")
+        this._startTimeView = new LeftTimeView()
+        this._endTimeView = new RightTimeView()
         this._pauseButton = new PauseButtonView()
         this._playButton = new PlayButtonView()
         this._stopButton = new StopButtonView()
@@ -41,47 +37,28 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
         this._fastForwardButton = new FastForwardButtonView()
         this._nextButton = new NextButtonView()
         this._previousButton = new PreviousButtonView()
-        this._progressBar = new ProgressBarView()
-    }
-    private _updateProgressBar(currentTime: string){
-        let current = moment.duration(currentTime).asSeconds()
-        let duration = moment.duration(this._duration).asSeconds()
-        let percent = current * 100 / duration
-        this._progressBar.updatePercent(percent)
+        this._liveView = new LiveView()
     }
     render() {
-            this.$el.html(this._template())
-            this.$("#duration").html(this._durationView.render().el)
-            this.$("#currentTime").html(this._currentTimeView.render().el)
-            this.$("#pauseButton").html(this._pauseButton.render().el)
-            this.$("#playButton").html(this._playButton.render().el)
-            this.$("#stopButton").html(this._stopButton.render().el)
-            this.$("#fastForwardButton").html(this._fastForwardButton.render().el)
-            this.$("#fastBackwardButton").html(this._fastBackwardButton.render().el)
-            this.$("#nextButton").html(this._nextButton.render().el)
-            this.$("#previousButton").html(this._previousButton.render().el)
-            this.$("#progressBar").html(this._progressBar.render().el)
-        
+        this.$el.html(this._template())
+        this.$("#endTime").html(this._endTimeView.render().el)
+        this.$("#startTime").html(this._startTimeView.render().el)
+        this.$("#pauseButton").html(this._pauseButton.render().el)
+        this.$("#playButton").html(this._playButton.render().el)
+        this.$("#stopButton").html(this._stopButton.render().el)
+        this.$("#fastForwardButton").html(this._fastForwardButton.render().el)
+        this.$("#fastBackwardButton").html(this._fastBackwardButton.render().el)
+        this.$("#nextButton").html(this._nextButton.render().el)
+        this.$("#previousButton").html(this._previousButton.render().el)
+        this.$("#liveView").html(this._liveView.render().el)
         return this
     }
-    /**
-     * Current position updated
-     * @param value: the new current position
-     */
     updateLeftTime(value: string) {
-        this._currentTimeView.updateLeftTime(value)
-        this._updateProgressBar(value)
-    }
-    /**
-     * update the duration
-     * @param value: the duration
-     */  
+        this._startTimeView.updateLeftTime(value)
+    }  
     updateRightTime(value: string): void {
-        // Not necessary on regular Renderer
+        this._endTimeView.updateRightTime(value)
     }
-    /**
-     * hide or display pause button
-     */
     public updatePauseButton(value: Button) {
         if(value.display) {
             this._pauseButton.showButton()
@@ -91,9 +68,6 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
             this._pauseButton.hideButton()
         }
     }
-    /**
-     * hide or display play button
-     */
     public updatePlayButton(value: Button) {
         if(value.display) {
             this._playButton.showButton()
@@ -103,9 +77,6 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
             this._playButton.hideButton()
         }
     }
-    /**
-     * hide or display stop button
-     */
     public updateStopButton(value: Button) {
         if(value.display) {
             this._stopButton.showButton()
@@ -115,9 +86,6 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
             this._stopButton.hideButton()
         }
     }
-    /**
-     * hide or display fastForward button
-     */
     public updateFastForwardButton(value: Button) {
         if(value.display) {
             this._fastForwardButton.showButton()
@@ -132,10 +100,6 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
             this._fastForwardButton.hideButton()
         }
     }
-   
-    /**
-     * hide or display fastBackward button
-     */
     public updateFastBackwardButton(value: Button) {
         if(value.display) {
             this._fastBackwardButton.showButton()
@@ -150,9 +114,6 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
             this._fastBackwardButton.hideButton()
         }
     }
-    /**
-     * hide or display next button
-     */
     public updateNextButton(value: Button) {
         if(value.display) {
             this._nextButton.showButton()
@@ -161,9 +122,6 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
             this._nextButton.hideButton()
         }
     }
-    /**
-     * hide or display previous button
-     */
     public updatePreviousButton(value: Button) {
         if(value.display) {
             this._previousButton.showButton()
@@ -175,6 +133,5 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
     removeView(): void {
         this.remove()
     }
-    
-}
 
+}

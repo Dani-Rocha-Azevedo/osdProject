@@ -1,7 +1,6 @@
 import * as Backbone from 'backbone'
 import { Button } from './button';
-import { timingSafeEqual } from 'crypto';
-export class ConfigOSD extends Backbone.Model{
+export class ConfigToDisplay extends Backbone.Model{
 
     constructor(playButton: Button, stopButton: Button, pauseButton: Button,
          fastBackwardButton: Button, fastfrowardButton: Button, nextButton: Button, previousButton: Button ) {

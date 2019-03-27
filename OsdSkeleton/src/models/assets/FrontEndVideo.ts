@@ -1,11 +1,12 @@
-import {Asset} from './Asset'
+import {FrontEndAsset} from './FrontEndAsset'
 import * as moment from 'moment';
 import 'moment-duration-format';
+import { assetsType } from '../../utils/constants';
 
-export class Video extends Asset {
+export class FrontEndVideo extends FrontEndAsset {
     
     constructor (description: string, duration: number, src: string) {
-        super("Video", description, src)
+        super(assetsType.VIDEO, description, src)
         this.duration = duration
     }
     public toString(): string {

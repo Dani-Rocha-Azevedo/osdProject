@@ -7,11 +7,11 @@ export class LeftTimeView extends Backbone.View<Backbone.Model> {
     private template: any
     private currentTime: string
     initialize() {
-        this.template = require("ejs-compiled-loader!./view/leftTime.ejs")
+        this.template = require("ejs-compiled-loader!./leftTime.ejs")
         this.currentTime = "00:00:00"
     }
 
-    updateCurrentTime(currentTime: string) {
+    updateLeftTime(currentTime: string) {
         this.currentTime = currentTime
         this.render()
     }
@@ -28,14 +28,14 @@ export class RightTimeView extends Backbone.View<Backbone.Model> {
     private duration: string
 
     initialize() {
-        this.template = require("ejs-compiled-loader!./view/rightTime.ejs")
+        this.template = require("ejs-compiled-loader!./rightTime.ejs")
         this.duration = "00:00:00"
     }
     /**
-     *Update duration
-     *OSD calls this function to update the duration
+     *Update the right time
+     *OSD calls this function to update the right time
      */
-    updateDuration(duration: string) {
+    updateRightTime(duration: string) {
         this.duration = duration
         this.render()
     }
@@ -52,7 +52,7 @@ export class PlayButtonView extends Backbone.View<Backbone.Model> {
     private display: string
 
     initialize() {
-        this.template = require("ejs-compiled-loader!./view/playButton.ejs")
+        this.template = require("ejs-compiled-loader!./playButton.ejs")
         this.display = "none"
     }
  
@@ -86,7 +86,7 @@ export class StopButtonView extends Backbone.View<Backbone.Model> {
     private display: string
 
     initialize() {
-        this.template = require("ejs-compiled-loader!./view/stopButton.ejs")
+        this.template = require("ejs-compiled-loader!./stopButton.ejs")
         this.display = "none"
     }
 
@@ -119,7 +119,7 @@ export class PauseButtonView extends Backbone.View<Backbone.Model> {
     private template: any
     private display: string
     initialize() {
-        this.template = require("ejs-compiled-loader!./view/pauseButton.ejs")
+        this.template = require("ejs-compiled-loader!./pauseButton.ejs")
         this.display = "none"
     }
   
@@ -158,7 +158,7 @@ export class FastBackwardButton extends Backbone.View<Backbone.Model> {
     private display: string
     private active: string
     initialize() {
-        this.template = require("ejs-compiled-loader!./view/fastBackwardButton.ejs")
+        this.template = require("ejs-compiled-loader!./fastBackwardButton.ejs")
         this.display = "none"
         this.active = "btn-primary"
     }
@@ -207,7 +207,7 @@ export class FastForwardButtonView extends Backbone.View<Backbone.Model> {
     private display: string
     private active: string
     initialize() {
-        this.template = require("ejs-compiled-loader!./view/fastForwardButton.ejs")
+        this.template = require("ejs-compiled-loader!./fastForwardButton.ejs")
         this.display = "none"
         this.active = "btn-primary"
     }
@@ -255,7 +255,7 @@ export class NextButtonView extends Backbone.View<Backbone.Model> {
     private display: string
 
     initialize() {
-        this.template = require("ejs-compiled-loader!./view/nextButton.ejs")
+        this.template = require("ejs-compiled-loader!./nextButton.ejs")
         this.display = "none"
     }
 
@@ -288,7 +288,7 @@ export class PreviousButtonView extends Backbone.View<Backbone.Model> {
     private display: string
 
     initialize() {
-        this.template = require("ejs-compiled-loader!./view/previousButton.ejs")
+        this.template = require("ejs-compiled-loader!./previousButton.ejs")
         this.display = "none"
     }
   
@@ -317,7 +317,7 @@ export class ProgressBarView extends Backbone.View<Backbone.Model> {
     private _template: any
     private percent: number
     initialize() {
-        this._template = require("ejs-compiled-loader!./view/ProgressBar.ejs")
+        this._template = require("ejs-compiled-loader!./progressBar.ejs")
         this.percent = 0
     }
     /**
@@ -332,4 +332,14 @@ export class ProgressBarView extends Backbone.View<Backbone.Model> {
         return this
     }
 
+}
+export class LiveView extends Backbone.View<Backbone.Model> {
+    private _template: any
+    initialize() {
+        this._template = require("ejs-compiled-loader!./liveView.ejs")
+    }
+    render() {
+        this.$el.html(this._template())
+        return this
+    }
 }
