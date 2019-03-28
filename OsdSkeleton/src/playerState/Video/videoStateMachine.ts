@@ -44,7 +44,9 @@ export class StateMachine extends StateMachineImpl<State> {
             video.playbackRate = 1
             video.play().then(() => {
                 this.setState(states.PLAYING)
-            }) 
+            }).catch((err) => {
+                console.log("ok")
+            })
         }catch(err) {
             throw new Error("video play: "+err)
         }
@@ -100,7 +102,7 @@ export class StateMachine extends StateMachineImpl<State> {
             }
             this.interval = setInterval(() => {
                 video.currentTime += speed
-            }, 5)
+            }, 10)
         }catch(err) {
             throw new Error("video Forward: "+err)
         }
@@ -108,7 +110,7 @@ export class StateMachine extends StateMachineImpl<State> {
     }
 
     /**
-     * Back ward the content
+     * Backward the content
      */
     @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't rewind content in stopped state")
     public backward(video: HTMLMediaElement, speed: number): void {
@@ -118,7 +120,6 @@ export class StateMachine extends StateMachineImpl<State> {
                 clearInterval(this.interval)
             }
             this.interval = setInterval(() => {
-                //video.playbackRate = 1
                 // at the beginning of movie
                 if (video.currentTime == 0) {
                     this.pause(video)
@@ -127,7 +128,7 @@ export class StateMachine extends StateMachineImpl<State> {
                     video.currentTime += -speed
                     video.play()
                 }
-            }, 5)
+            }, 10)
         }catch(err) {
             throw new Error("video Backward")
         }

@@ -18,122 +18,58 @@ validTransitions[states.FASTFORWARDING.label] = [states.PLAYING, states.PAUSED, 
 export class StateMachine extends StateMachineImpl<State> {
     private interval: any
     constructor() {
-        super(Object.values(states), validTransitions, states.PLAYING)
+        super(Object.values(states), validTransitions, states.PAUSED)
     }
     /**
      * start the content
      */
-    @checkStateIn([states.STOPPED,states.PAUSED, states.BACKWARDING, states.FASTFORWARDING], "you can't launch content in playing state")
-    public play(video: HTMLMediaElement ): Promise<any> {
-        return new Promise ((resolve, reject) => {
-            try {
-                if (this.interval) {
-                    clearInterval(this.interval)
-                }
-                video.playbackRate = 1
-                video.play()
-                this.setState(states.PLAYING)
-                resolve("Play movie")
-            }catch(err) {
-                reject(err)
+    @checkStateIn([states.STOPPED, states.PAUSED, states.BACKWARDING, states.FASTFORWARDING], "you can't launch content in playing state")
+    public play(video: HTMLMediaElement): void {
+        try {
+            if (this.interval) {
+                clearInterval(this.interval)
             }
-            
-        })
-        
+            video.playbackRate = 1
+            video.play().then(() => {
+                this.setState(states.PLAYING)
+            })
+        }catch(err) {
+            throw new Error("video play: "+err)
+        }
+       
     }
 
     /**
      * Stop the content
      */
     @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't stop content in stopped state")
-    public stop(video: HTMLMediaElement): Promise<any> {
-        //TODO handle stop video
-        return new Promise((resolve, reject) => {
-            try {
-                if (this.interval) {
-                    clearInterval(this.interval)
-                }
-                // reload the video
-                video.load()
-                video.pause()
-                this.setState(states.STOPPED)
-                resolve("Stop movie")
-            }catch(err) {
-                reject(err)
-            }
-           
-        })
+    public stop(video: HTMLMediaElement): void {
+        //! Not handled
     }
     /**
      * pause the content
      */
     @checkStateIn([states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't pause content in stopped/paused state")
-    public pause(video: HTMLMediaElement): Promise<any> {
-        return new Promise( (resolve, reject) => {
-            try {
-                if (this.interval) {
-                    clearInterval(this.interval)
-                }
-                video.playbackRate = 1
-                video.pause()
-                this.setState(states.PAUSED)
-                resolve("Pause movie")
-            }
-            catch(err) {
-                reject(err)
-            }
-        })
-        
+    public pause(video: HTMLMediaElement): void {
+        //! Not handled
+
     }
 
     /**
      * Fast forward the content
      */
     @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't fast forward content in stopped state")
-    public fastForward(video: HTMLMediaElement): Promise<any> {
-        return new Promise((resolve, reject) => {
-            try {
-                if (this.interval) {
-                    clearInterval(this.interval)
-                }
-                video.playbackRate = 1.5
-                video.play()
-                this.setState(states.FASTFORWARDING)
-                resolve("Fasforward movie")
-            }catch(err) {
-                reject(err)
-            }
-        })
+    public fastForward(video: HTMLMediaElement, speed: number): void {
+        //! Not handled
     }
 
     /**
      * Back ward the content
      */
     @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't rewind content in stopped state")
-    public backward(video: HTMLMediaElement): Promise<any> {
-        return new Promise((resolve, reject) => {
-            try {
-                this.setState(states.BACKWARDING)
-                if (this.interval) {
-                    clearInterval(this.interval)
-                }
-                this.interval = setInterval(() => {
-                    video.playbackRate = 1
-                    // at the beginning of movie
-                    if(video.currentTime == 0) {
-                        this.pause(video)
-                    }
-                    else {
-                        video.currentTime += -.1
-                        video.play()
-                    }
-                }, 20)
-                resolve("Backward movie")
-            }catch(err) {
-                reject(err)
-            }
-        })
-       
+    public backward(video: HTMLMediaElement, speed: number): void {
+        //! Not handled
+        
     }
 
     

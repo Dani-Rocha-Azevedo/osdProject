@@ -9,6 +9,7 @@ import { IPlayerState } from './playerState/IPlayerState';
 import { PlayerStateFactory } from './playerState/playerStateFactory';
 import { Stack } from './utils/stack';
 import { states } from './utils/constants';
+import { LiveChannelPlayerState } from './playerState/LiveChannel/liveChannelPlayerState';
 export class PlayerLayer extends Backbone.View<Backbone.Model>{
     private osd: OsdLayer
     private playerState: IPlayerState

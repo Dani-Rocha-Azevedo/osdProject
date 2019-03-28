@@ -34,7 +34,6 @@ export class LiveChannelRenderer extends Backbone.View<Backbone.Model> implement
         this._playButton = new PlayButtonView()
         this._stopButton = new StopButtonView()
         this._fastBackwardButton = new FastBackwardButton()
-        this._fastForwardButton = new FastForwardButtonView()
         this._nextButton = new NextButtonView()
         this._previousButton = new PreviousButtonView()
         this._liveView = new IndicatorLive()
@@ -46,7 +45,6 @@ export class LiveChannelRenderer extends Backbone.View<Backbone.Model> implement
         this.$("#pauseButton").html(this._pauseButton.render().el)
         this.$("#playButton").html(this._playButton.render().el)
         this.$("#stopButton").html(this._stopButton.render().el)
-        this.$("#fastForwardButton").html(this._fastForwardButton.render().el)
         this.$("#fastBackwardButton").html(this._fastBackwardButton.render().el)
         this.$("#nextButton").html(this._nextButton.render().el)
         this.$("#previousButton").html(this._previousButton.render().el)
@@ -91,18 +89,19 @@ export class LiveChannelRenderer extends Backbone.View<Backbone.Model> implement
         }
     }
     public updateFastForwardButton(value: Button) {
-        if(value.display) {
-            this._fastForwardButton.showButton()
-            if(value.active) {
-                this._fastForwardButton.activeButton()
-            }
-            else {
-                this._fastForwardButton.desactivateButton()
-            }
-        }
-        else {
-            this._fastForwardButton.hideButton()
-        }
+        // if(value.display) {
+        //     this._fastForwardButton.showButton()
+        //     if(value.active) {
+        //         this._fastForwardButton.activeButton()
+        //     }
+        //     else {
+        //         this._fastForwardButton.desactivateButton()
+        //     }
+        // }
+        // else {
+        //     this._fastForwardButton.hideButton()
+        // }
+        // LiveChannel don't handle this button
     }
     public updateFastBackwardButton(value: Button) {
         if(value.display) {

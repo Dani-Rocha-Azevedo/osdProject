@@ -17,59 +17,82 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
         //! get startTime, endTime by EPG
         let asset = new FrontEndLiveChannel(options.asset.description, options.asset.startTime, options.asset.endTime, options.asset.src)
         this._playingAsset.asset = asset
-        this._playingAsset.state = states.PLAYING
+        this._playingAsset.state = states.PAUSED
+        this._handleChangeState()
     }
     render(){
         this.$el.html(this._template({src: this._playingAsset.asset.src}))
         return this
     }
     public play(): IPlayerState {
-        let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.play(myVideo).then(() => {
-            this._playingAsset.state = states.PLAYING
-        }).catch((err) => {
+        let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
+        try {
+            this._stateMachine.play(domVideo)
+        }catch(err) {
             console.log(err)
-        })
+        }
         return this
     }
     public stop(): IPlayerState {
-        let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.stop(myVideo).then(() => {
-            this._playingAsset.state = states.STOPPED
-        }).catch((err) => {
+        let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
+        try {
+            //this._stateMachine.stop(domVideo)
+        }catch(err) {
             console.log(err)
-        })
+        }
         return this
     }
     public pause(): IPlayerState {
-        let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.pause(myVideo).then(() => {
-            this._playingAsset.state = states.PAUSED
-        }).catch((err) => {
+        let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
+        try {
+           // this._stateMachine.pause(domVideo)
+        }catch(err) {
             console.log(err)
-        })
+        }
         return this
     }
     public fastForward(): IPlayerState {
-        let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.fastForward(myVideo).then(() => {
-            this._playingAsset.state = states.FASTFORWARDING
-        }).catch((err) => {
-            console.log(err)
-        })
+        // Not handled 
         return this
     }
     public fastBackward(): IPlayerState {
-        let myVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        this._stateMachine.backward(myVideo).then(() => {
-            this._playingAsset.state = states.BACKWARDING
-        }).catch((err) => {
-            console.log(err)
-        })
+        //TODO change playerState
         return this
     }
     public removeView(): void {
+        this._playingAsset.speed = 0
+        clearInterval(this._interval)
         this.remove()
+    }
+    /**
+     * Launch when the video's finished
+     */
+    private _videoEnded() {
+        try {
+            let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
+            this._stateMachine.stop(domVideo)
+        }catch(err) {
+            console.log(err)
+        } 
+    }
+    private _handleChangeState() {
+        this._stateMachine.onEnterState(states.PAUSED, ()=> {
+            this._playingAsset.state = states.PAUSED
+            
+        })
+        this._stateMachine.onEnterState(states.STOPPED, ()=> {
+            this._playingAsset.state = states.STOPPED
+        }) 
+        this._stateMachine.onEnterState(states.PLAYING, ()=> {
+            this._playingAsset.state = states.PLAYING
+            
+        })
+        this._stateMachine.onEnterState(states.FASTFORWARDING,()=> {
+            this._playingAsset.state = states.FASTFORWARDING
+        })
+        this._stateMachine.onEnterState(states.BACKWARDING,()=> {
+            this._playingAsset.state = states.BACKWARDING
+        })
     }
 
 

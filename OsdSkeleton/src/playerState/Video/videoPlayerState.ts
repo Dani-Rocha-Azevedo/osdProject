@@ -23,7 +23,7 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
         super(options)
         this._template = require("ejs-compiled-loader!./videoPlayerState.ejs")
         this._stateMachine = new StateMachine()
-        this._speeds = [0, .1, .2, .3, .4, .5]
+        this._speeds = [0, .1, .2, .25, .3, .35]
         this._currentSpeedIndex = 0
         this._playingAsset = options.playingAsset
         let asset: FrontEndAsset = new FrontEndVideo(options.asset.description , Math.round(options.asset.duration), options.asset.src)
@@ -108,7 +108,6 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
         return this
     }
     public removeView(): void {
-        this._playingAsset.state = states.STOPPED
         this._currentSpeedIndex = 0
         this._playingAsset.speed = this._currentSpeedIndex
         clearInterval(this._interval)
