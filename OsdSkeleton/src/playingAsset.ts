@@ -12,6 +12,7 @@ export class PlayingAsset extends Backbone.Model{
         this.state = state 
         this.asset = asset 
         this.currentPosition = 0
+        this.speed = 1
         
     }
     
@@ -35,6 +36,12 @@ export class PlayingAsset extends Backbone.Model{
     }
     public get state(): State {
         return this.get('state')
+    }
+    public get speed(): number {
+        return this.get('speed')
+    }
+    public set speed(value: number) {
+        this.set('speed', value)
     }
 
 }

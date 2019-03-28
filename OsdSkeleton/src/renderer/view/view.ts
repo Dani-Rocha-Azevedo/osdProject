@@ -333,13 +333,34 @@ export class ProgressBarView extends Backbone.View<Backbone.Model> {
     }
 
 }
-export class LiveView extends Backbone.View<Backbone.Model> {
+export class IndicatorLive extends Backbone.View<Backbone.Model> {
     private _template: any
     initialize() {
-        this._template = require("ejs-compiled-loader!./liveView.ejs")
+        this._template = require("ejs-compiled-loader!./liveIndicator.ejs")
     }
     render() {
         this.$el.html(this._template())
+        return this
+    }
+}
+export class SpeedIndicator extends Backbone.View<Backbone.Model> {
+    private _template: any
+    private _speed: string
+    initialize() {
+        this._template = require("ejs-compiled-loader!./speedIndicator.ejs")
+        this._speed = ''
+    }
+    public updateSpeedIndicator(value: number) {
+        if(value === 0) {
+            this._speed = ''
+        }
+        else {
+            this._speed = (value * 2) + 'x'
+        }
+        this.render()
+    }
+    render() {
+        this.$el.html(this._template({speed: this._speed}))
         return this
     }
 }

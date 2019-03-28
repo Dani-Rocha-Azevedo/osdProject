@@ -8,6 +8,11 @@ export interface IRenderer {
      */
     updateLeftTime(value: string): void
     /**
+     * Update the speed indicator with the new speed
+     * @param value : the new speed
+     */
+    updateSpeedIndicator(value: number): void
+    /**
      * update the right time
      * @param value: the new right time
      */

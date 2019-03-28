@@ -26,8 +26,9 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         this.playerStateFactory = new PlayerStateFactory()
         this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getNext()})
         this.listenTo(this._playingAsset,'change:state', this._stateUpdated)
-        $('#player').html(this.playerState.render().el)
         this._initEvent()
+        $('#player').html(this.playerState.render().el)
+        this.playerState.play()
     }
     _initEvent() {
         this._eventBus.on("next", this._next, this)
@@ -45,6 +46,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         this.playerState.removeView()
         this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getNext()})
         $("#player").html(this.playerState.render().el)
+        this.playerState.play()
     }
      /**
      * Demand to playerStateFactory a new PlayerState and give the previous asset to play
@@ -53,6 +55,8 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         this.playerState.removeView()
         this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getPrevious()})
         $("#player").html(this.playerState.render().el)
+        this.playerState.play()
+
     }
      /**
      * Demand to playerState to play the asset 

@@ -32,6 +32,7 @@ export class OsdLayer extends Backbone.View<any> {
 
         if(this._playingAsset) {
             this.listenTo(this._playingAsset, 'change:currentPosition', this._updateLeftTime)
+            this.listenTo(this._playingAsset, 'change:speed', this._speedUpdated)
             this.listenTo(this._playingAsset, 'change:state', this._stateUpdated)
             this.listenTo(this._playingAsset, 'change:asset', this._assetUpdated)
         }
@@ -90,6 +91,12 @@ export class OsdLayer extends Backbone.View<any> {
      */
     private _stateUpdated() {
         this._stateMachine.setState(this._playingAsset.state)
+    }
+    /**
+     * The speed has been updated
+     */
+    private _speedUpdated() {
+        this._renderer.updateSpeedIndicator(this._playingAsset.speed)
     }
     private _firstDisplay() {
         this._updateFastBackwardButton()

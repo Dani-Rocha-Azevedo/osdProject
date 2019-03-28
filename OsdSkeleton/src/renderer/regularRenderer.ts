@@ -2,7 +2,7 @@ import * as _ from 'underscore'
 import * as Backbone from 'backbone'
 import { FrontEndVideo } from '../models/assets/FrontEndVideo'
 import {LeftTimeView, StopButtonView, PlayButtonView, 
-    FastForwardButtonView, FastBackwardButton, NextButtonView, PreviousButtonView, ProgressBarView} from './view/view'
+    FastForwardButtonView, FastBackwardButton, NextButtonView, PreviousButtonView, ProgressBarView, SpeedIndicator} from './view/view'
 import {RightTimeView} from './view/view'
 import {PauseButtonView} from './view/view'
 import { FrontEndAsset } from '../models/assets/FrontEndAsset';
@@ -25,6 +25,7 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
     private _nextButton: NextButtonView
     private _previousButton: PreviousButtonView
     private _progressBar: ProgressBarView
+    private _speedInidicator: SpeedIndicator
     constructor(asset: FrontEndAsset) {
         super()
         this._duration = (<FrontEndVideo>asset).getDuration()
@@ -42,6 +43,7 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
         this._nextButton = new NextButtonView()
         this._previousButton = new PreviousButtonView()
         this._progressBar = new ProgressBarView()
+        this._speedInidicator = new SpeedIndicator()
     }
     private _updateProgressBar(currentTime: string){
         let current = moment.duration(currentTime).asSeconds()
@@ -50,25 +52,25 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
         this._progressBar.updatePercent(percent)
     }
     render() {
-            this.$el.html(this._template())
-            this.$("#duration").html(this._durationView.render().el)
-            this.$("#currentTime").html(this._currentTimeView.render().el)
-            this.$("#pauseButton").html(this._pauseButton.render().el)
-            this.$("#playButton").html(this._playButton.render().el)
-            this.$("#stopButton").html(this._stopButton.render().el)
-            this.$("#fastForwardButton").html(this._fastForwardButton.render().el)
-            this.$("#fastBackwardButton").html(this._fastBackwardButton.render().el)
-            this.$("#nextButton").html(this._nextButton.render().el)
-            this.$("#previousButton").html(this._previousButton.render().el)
-            this.$("#progressBar").html(this._progressBar.render().el)
-        
+        this.$el.html(this._template())
+        this.$("#duration").html(this._durationView.render().el)
+        this.$("#currentTime").html(this._currentTimeView.render().el)
+        this.$("#pauseButton").html(this._pauseButton.render().el)
+        this.$("#playButton").html(this._playButton.render().el)
+        this.$("#stopButton").html(this._stopButton.render().el)
+        this.$("#fastForwardButton").html(this._fastForwardButton.render().el)
+        this.$("#fastBackwardButton").html(this._fastBackwardButton.render().el)
+        this.$("#nextButton").html(this._nextButton.render().el)
+        this.$("#previousButton").html(this._previousButton.render().el)
+        this.$("#progressBar").html(this._progressBar.render().el)
+        this.$("#speedIndicator").html(this._speedInidicator.render().el)
         return this
     }
     /**
      * Current position updated
      * @param value: the new current position
      */
-    updateLeftTime(value: string) {
+    public updateLeftTime(value: string) {
         this._currentTimeView.updateLeftTime(value)
         this._updateProgressBar(value)
     }
@@ -76,8 +78,15 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
      * update the duration
      * @param value: the duration
      */  
-    updateRightTime(value: string): void {
+    public updateRightTime(value: string): void {
         // Not necessary on regular Renderer
+    }
+    /**
+     * Update the speed indicator, with new speed
+     * @param value: the new speed
+     */
+    public updateSpeedIndicator(value: number) {
+        this._speedInidicator.updateSpeedIndicator(value)
     }
     /**
      * hide or display pause button

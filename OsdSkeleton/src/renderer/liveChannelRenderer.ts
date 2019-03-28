@@ -1,5 +1,5 @@
 import * as Backbone from 'backbone'
-import { LeftTimeView, RightTimeView, PauseButtonView, StopButtonView, PlayButtonView, FastForwardButtonView, FastBackwardButton, NextButtonView, PreviousButtonView, LiveView } from './view/view';
+import { LeftTimeView, RightTimeView, PauseButtonView, StopButtonView, PlayButtonView, FastForwardButtonView, FastBackwardButton, NextButtonView, PreviousButtonView, IndicatorLive } from './view/view';
 import { FrontEndAsset } from '../models/assets/FrontEndAsset';
 import { FrontEndLiveChannel } from '../models/assets/FrontEndLiveChannel';
 import { IRenderer } from './IRenderer';
@@ -18,7 +18,7 @@ export class LiveChannelRenderer extends Backbone.View<Backbone.Model> implement
     private _fastBackwardButton: FastBackwardButton
     private _nextButton: NextButtonView
     private _previousButton: PreviousButtonView
-    private _liveView: LiveView
+    private _liveView: IndicatorLive
     constructor(asset: FrontEndAsset) {
         super()
         this._startTime = (<FrontEndLiveChannel> asset).getStartTime()
@@ -37,7 +37,7 @@ export class LiveChannelRenderer extends Backbone.View<Backbone.Model> implement
         this._fastForwardButton = new FastForwardButtonView()
         this._nextButton = new NextButtonView()
         this._previousButton = new PreviousButtonView()
-        this._liveView = new LiveView()
+        this._liveView = new IndicatorLive()
     }
     render() {
         this.$el.html(this._template())
@@ -53,11 +53,15 @@ export class LiveChannelRenderer extends Backbone.View<Backbone.Model> implement
         this.$("#liveView").html(this._liveView.render().el)
         return this
     }
-    updateLeftTime(value: string) {
+    
+    public updateLeftTime(value: string) {
         this._startTimeView.updateLeftTime(value)
     }  
-    updateRightTime(value: string): void {
+    public updateRightTime(value: string): void {
         this._endTimeView.updateRightTime(value)
+    }
+    public updateSpeedIndicator(value: number): void {
+        //the liveChannelRenderer don't have a speedIndicator
     }
     public updatePauseButton(value: Button) {
         if(value.display) {
