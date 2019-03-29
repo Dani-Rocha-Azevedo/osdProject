@@ -27,6 +27,12 @@ export class Stack {
         return this.array [this.currentPosition]
     }
     /**
+     * Return the current asset
+     */
+    public getCurrentAsset(): any {
+        return this.array [this.currentPosition]
+    } 
+    /**
      * Return the previous asset
      * if we're in the start of the array, return the last asset
      */

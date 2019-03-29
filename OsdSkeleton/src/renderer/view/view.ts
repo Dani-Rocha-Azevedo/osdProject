@@ -335,11 +335,24 @@ export class ProgressBarView extends Backbone.View<Backbone.Model> {
 }
 export class IndicatorLive extends Backbone.View<Backbone.Model> {
     private _template: any
-    initialize() {
+    private _valueText: string
+    private _classCss: string
+    constructor(live: boolean) {
+        super()
+        if(live) {
+            this._valueText = "Live"
+            this._classCss = "label-success"
+        }
+        else {
+            this._valueText = "No live"
+            this._classCss = "label-danger"
+        }
+    }
+    initialize(options: any) {
         this._template = require("ejs-compiled-loader!./liveIndicator.ejs")
     }
     render() {
-        this.$el.html(this._template())
+        this.$el.html(this._template({classCss: this._classCss, valueText: this._valueText}))
         return this
     }
 }

@@ -4,12 +4,16 @@ export class FrontEndLiveChannel extends FrontEndAsset {
     
     private startTime: string
     private endTime: string 
-    constructor (description: string, startTime: string, endTime: string, src: string) {
+    private realTime: number
+    constructor (description: string, startTime: string, endTime: string, src: string, realTime: number) {
         super(assetsType.LIVE_CHANNEL, description, src)
         this.endTime = endTime
         this.startTime = startTime
+        this.realTime = realTime
     }
-
+    public getRealTime(): number {
+        return this.realTime
+    }
     public getStartTime(): string {
         return this.startTime
     }

@@ -4,7 +4,19 @@ import * as $ from 'jquery'
 import StateMachineImpl = fsm.StateMachineImpl
 import Transitions = fsm.Transitions
 import checkStateIn = fsm.CheckStateIn
-import {states} from '../../utils/constants'
+import { stat, promises } from 'fs';
+import { REFUSED } from 'dns';
+
+/**
+* The differents States
+*/
+export const states = {
+    STOPPED: new State("STOPPED"),
+    PLAYING: new State("PLAYING"),
+    PAUSED: new State("PAUSED"),
+    BACKWARDING: new State("BACKWARDING"),
+    FASTFORWARDING: new State("FASTFORWARDING")
+}
 /**
 * All vaild transitions
 */
@@ -18,21 +30,22 @@ validTransitions[states.FASTFORWARDING.label] = [states.PLAYING, states.PAUSED, 
 export class StateMachine extends StateMachineImpl<State> {
     private interval: any
     constructor() {
-        super(Object.values(states), validTransitions, states.PAUSED)
+        super(Object.values(states), validTransitions, states.PLAYING)
     }
     /**
      * start the content
      */
     @checkStateIn([states.STOPPED, states.PAUSED, states.BACKWARDING, states.FASTFORWARDING], "you can't launch content in playing state")
-    public play(video: HTMLMediaElement, currentTime: number): void {
+    public play(video: HTMLMediaElement): void {
         try {
             if (this.interval) {
                 clearInterval(this.interval)
             }
             video.playbackRate = 1
-            video.currentTime = currentTime
             video.play().then(() => {
                 this.setState(states.PLAYING)
+            }).catch((err) => {
+                console.log("ok")
             })
         }catch(err) {
             throw new Error("video play: "+err)
@@ -44,15 +57,33 @@ export class StateMachine extends StateMachineImpl<State> {
      * Stop the content
      */
     @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't stop content in stopped state")
-    public stop(video: HTMLMediaElement): void {
-        //! Not handled
+    public stop(): void {
+        //TODO handle stop video
+        try {
+            if (this.interval) {
+                clearInterval(this.interval)
+            }
+            this.setState(states.STOPPED)
+        }catch(err) {
+            throw new Error("video stop: "+err)
+        }
     }
     /**
      * pause the content
      */
     @checkStateIn([states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't pause content in stopped/paused state")
     public pause(video: HTMLMediaElement): void {
-        //! Not handled
+        try{
+            if (this.interval) {
+                clearInterval(this.interval)
+            }
+            video.playbackRate = 1
+            video.pause()
+            this.setState(states.PAUSED)
+        }catch(err) {
+            throw new Error("video pause: "+err)
+        }
+        
 
     }
 
@@ -61,18 +92,46 @@ export class StateMachine extends StateMachineImpl<State> {
      */
     @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't fast forward content in stopped state")
     public fastForward(video: HTMLMediaElement, speed: number): void {
-        //! Not handled
-    }
-
-    /**
-     * Back ward the content
-     */
-    @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't rewind content in stopped state")
-    public backward(video: HTMLMediaElement, speed: number): void {
-        //! Not handled
+        try{
+            this.setState(states.FASTFORWARDING)
+            if (this.interval) {
+                clearInterval(this.interval)
+            }
+            this.interval = setInterval(() => {
+                video.currentTime += speed
+            }, 10)
+        }catch(err) {
+            throw new Error("video Forward: "+err)
+        }
         
     }
 
-    
-    
+    /**
+     * Backward the content
+     */
+    @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't rewind content in stopped state")
+    public backward(video: HTMLMediaElement, speed: number): void {
+        try {
+            this.setState(states.BACKWARDING)
+            if (this.interval) {
+                clearInterval(this.interval)
+            }
+            this.interval = setInterval(() => {
+                // at the beginning of movie
+                if (video.currentTime == 0) {
+                    this.pause(video)
+                }
+                else {
+                    video.currentTime += -speed
+                    video.play()
+                }
+            }, 10)
+        }catch(err) {
+            throw new Error("video Backward")
+        }
+        
+    }
+
+
+
 }

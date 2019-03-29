@@ -25,6 +25,7 @@ export class LayerManager extends Backbone.View<Backbone.Model> {
             endTime: "09:30",
             description: "LiveChannel",
             src: "https://test.flowr.cloud/ozone/W6isCSziBO",
+            realTime: 30,
             type: assetsType.LIVE_CHANNEL
         },
         {   duration: 157.000,

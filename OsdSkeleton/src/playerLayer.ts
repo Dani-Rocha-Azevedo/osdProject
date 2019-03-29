@@ -9,7 +9,6 @@ import { IPlayerState } from './playerState/IPlayerState';
 import { PlayerStateFactory } from './playerState/playerStateFactory';
 import { Stack } from './utils/stack';
 import { states } from './utils/constants';
-import { LiveChannelPlayerState } from './playerState/LiveChannel/liveChannelPlayerState';
 export class PlayerLayer extends Backbone.View<Backbone.Model>{
     private osd: OsdLayer
     private playerState: IPlayerState
@@ -39,6 +38,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         this._eventBus.on("pause", this._pause, this)
         this._eventBus.on("backward", this._fastBackward, this)
         this._eventBus.on("fastForward", this._fastForward, this)
+        this._eventBus.on("refreshPlayerState", this._refreshPlayerState, this)
     }
     /**
      * Demand to playerStateFactory a new PlayerState and give the next asset to play
@@ -63,32 +63,63 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
      * Demand to playerState to play the asset 
      */
     private _play() {
-        this.playerState.play()
+        this.playerState = this.playerState.play()
     }
     /**
      * Remove the playerView and return in the previous menu
      */
     private _stop() {
-        this.playerState.removeView()
-        //this.playerState.stop()
+        let playerStateTemp = this.playerState.stop()
+        if(playerStateTemp.constructor.name !==  this.playerState.constructor.name) {
+            this.playerState.removeView()
+            this.playerState = playerStateTemp
+            $("#player").html(this.playerState.render().el)
+            this.playerState.postRender()
+            //pass to liveChannel
+            this.playerState.play()
+        }
+        else {
+            this.playerState = playerStateTemp
+        }
     }
     /**
      * Demand to playerState to pause the asset
      */
     private _pause() {
-        this.playerState.pause()
+        let playerStateTemp = this.playerState.pause()
+        if(playerStateTemp.constructor.name !==  this.playerState.constructor.name) {
+            this.playerState.removeView()
+            this.playerState = playerStateTemp
+            $("#player").html(this.playerState.render().el)
+            this.playerState.postRender()
+            this.playerState.pause()
+        }
+        else {
+            this.playerState = playerStateTemp
+        }
+        
     }
     /**
      * Demand to playerState to rewind the asset
      */
     private _fastBackward() {
-        this.playerState.fastBackward()
+        let playerStateTemp = this.playerState.fastBackward()
+        if(playerStateTemp.constructor.name !==  this.playerState.constructor.name) {
+            this.playerState.removeView()
+            this.playerState = playerStateTemp
+            $("#player").html(this.playerState.render().el)
+            this.playerState.postRender()
+            this.playerState.fastBackward()
+        }
+        else {
+            this.playerState = playerStateTemp
+        }
     }
     /**
      * Demand to playerState to forward the asset 
      */
     private _fastForward() {
-        this.playerState.fastForward()
+        this.playerState = this.playerState.fastForward()
     }
     /**
      * Launch when the state is updated
@@ -101,5 +132,15 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
             this._next()
         }
     }
+    /**
+     * Create a new player state with the current asset
+     */
+    private _refreshPlayerState() {
+        this.playerState.removeView()
+        this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getCurrentAsset()})
+        $("#player").html(this.playerState.render().el)
+        this.playerState.play()
+    }
+    
    
 }

@@ -17,4 +17,5 @@ export const assetsType = {
     LIVE_CHANNEL: "liveChannel",
     VIDEO: "video",
     IMAGE: "image", 
+    TIME_SHIFT: "timeShift"
 }
