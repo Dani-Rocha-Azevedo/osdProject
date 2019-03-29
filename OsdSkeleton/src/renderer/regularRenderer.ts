@@ -2,7 +2,7 @@ import * as _ from 'underscore'
 import * as Backbone from 'backbone'
 import { FrontEndVideo } from '../models/assets/FrontEndVideo'
 import {LeftTimeView, StopButtonView, PlayButtonView, 
-    FastForwardButtonView, FastBackwardButton, NextButtonView, PreviousButtonView, ProgressBarView, SpeedIndicator} from './view/view'
+    FastForwardButtonView, FastBackwardButton, NextButtonView, PreviousButtonView, ProgressBarView, SpeedIndicator, JumpForwardTimeView, JumpBackwardTimeView} from './view/view'
 import {RightTimeView} from './view/view'
 import {PauseButtonView} from './view/view'
 import { FrontEndAsset } from '../models/assets/FrontEndAsset';
@@ -10,6 +10,7 @@ import { Button } from '../models/button';
 import * as moment from 'moment';
 import 'moment-duration-format';
 import { IRenderer } from './IRenderer';
+import { ConfigToDisplay } from '../models/config';
 
 export class RegularRenderer extends Backbone.View<Backbone.Model> implements IRenderer {
     private _template: any
@@ -24,14 +25,12 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
     private _fastBackwardButton: FastBackwardButton
     private _nextButton: NextButtonView
     private _previousButton: PreviousButtonView
+    private _jumpBackwardTimeButton: JumpBackwardTimeView
+    private _jumpForwardTimeButton: JumpForwardTimeView
     private _progressBar: ProgressBarView
     private _speedInidicator: SpeedIndicator
-    constructor(asset: FrontEndAsset) {
+    constructor(asset: FrontEndAsset, configToDisplay: ConfigToDisplay) {
         super()
-        this._duration = (<FrontEndVideo>asset).getDuration()
-        this._durationView.updateRightTime(this._duration)
-    }
-    initialize() {
         this._template = require("ejs-compiled-loader!./regularRenderer.ejs")
         this._currentTimeView = new LeftTimeView()
         this._durationView = new RightTimeView()
@@ -42,8 +41,12 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
         this._fastForwardButton = new FastForwardButtonView()
         this._nextButton = new NextButtonView()
         this._previousButton = new PreviousButtonView()
+        this._jumpBackwardTimeButton = new JumpBackwardTimeView(configToDisplay.jumpTime)
+        this._jumpForwardTimeButton = new JumpForwardTimeView(configToDisplay.jumpTime)
         this._progressBar = new ProgressBarView()
         this._speedInidicator = new SpeedIndicator()
+        this._duration = (<FrontEndVideo>asset).getDuration()
+        this._durationView.updateRightTime(this._duration)
     }
     private _updateProgressBar(currentTime: string){
         let current = moment.duration(currentTime).asSeconds()
@@ -62,6 +65,8 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
         this.$("#fastBackwardButton").html(this._fastBackwardButton.render().el)
         this.$("#nextButton").html(this._nextButton.render().el)
         this.$("#previousButton").html(this._previousButton.render().el)
+        this.$("#jumpBackwardTimeButton").html(this._jumpBackwardTimeButton.render().el)
+        this.$("#jumpForwardTimeButton").html(this._jumpForwardTimeButton.render().el)
         this.$("#progressBar").html(this._progressBar.render().el)
         this.$("#speedIndicator").html(this._speedInidicator.render().el)
         return this
@@ -179,6 +184,22 @@ export class RegularRenderer extends Backbone.View<Backbone.Model> implements IR
         }
         else {
             this._previousButton.hideButton()
+        }
+    }
+    public updateJumpBackwardTimeButton(value: Button): void {
+        if(value.display) {
+            this._jumpBackwardTimeButton.showButton()
+        }
+        else {
+            this._jumpBackwardTimeButton.hideButton()
+        }
+    }
+    public updateJumpForwardTimeButton(value: Button): void {
+        if(value.display) {
+            this._jumpForwardTimeButton.showButton()
+        }
+        else {
+            this._jumpForwardTimeButton.hideButton()
         }
     }
     removeView(): void {

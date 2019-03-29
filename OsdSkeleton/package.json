@@ -21,6 +21,7 @@
     "webpack-dev-server": "^3.2.1"
   },
   "dependencies": {
+    "@mdi/font": "^3.5.95",
     "@types/ejs": "^2.6.3",
     "@types/node": "^11.11.3",
     "backbone": "^1.4.0",

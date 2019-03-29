@@ -5,6 +5,8 @@ export interface IPlayerState {
     pause(): IPlayerState
     fastForward(): IPlayerState
     fastBackward(): IPlayerState
+    jumpBackwardTime(time: number): IPlayerState
+    jumpForwardTime(time: number): IPlayerState
     render(): any
     postRender(): void
     /**

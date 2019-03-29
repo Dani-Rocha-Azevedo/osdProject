@@ -68,6 +68,20 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
                 asset.src, domVideo.currentTime)
         return new TimeShiftPlayerState({playingAsset: this._playingAsset, asset: timeShiftAsset, state: states.BACKWARDING})
     }
+    /**
+     * Never used in a liveChannel asset
+     */
+    public jumpBackwardTime(): IPlayerState {
+        console.log("backwardTime LiveChannel")
+        return this
+    }
+    /**
+     * Never used in a liveChannel asset
+     */
+    public jumpForwardTime(): IPlayerState {
+        console.log("forwardTime LiveChannel")
+        return this
+    }
     public removeView(): void {
         clearInterval(this._interval)
         this.remove()

@@ -117,6 +117,24 @@ export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implemen
         } 
         return this
     }
+    public jumpBackwardTime(): IPlayerState {
+        try {
+            let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
+            this._stateMachine.jumpBackwardTime(domVideo, 15)
+        }catch(err) {
+            console.log(err)
+        }
+        return this
+    }
+    public jumpForwardTime(): IPlayerState {
+        try {
+            let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
+            this._stateMachine.jumpForwardTime(domVideo, 15)
+        }catch(err) {
+            console.log(err)
+        }
+        return this
+    }
     public removeView(): void {
         this._currentSpeedIndex = 0
         this._playingAsset.speed = this._currentSpeedIndex

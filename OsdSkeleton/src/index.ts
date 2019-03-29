@@ -14,12 +14,7 @@ export class LayerManager extends Backbone.View<Backbone.Model> {
     private _eventBus: any
     private _playingAsset: PlayingAsset
     private _assets: any = [
-        {
-            duration : 155.000,
-            description: "Pokemon",
-            src: "https://test.flowr.cloud/ozone/caw18fZLa9",
-            type: assetsType.VIDEO
-        },
+      
         {
             startTime: "09:10",
             endTime: "09:30",
@@ -37,7 +32,7 @@ export class LayerManager extends Backbone.View<Backbone.Model> {
     constructor() {
         super()
         this._eventBus = _.extend({}, Backbone.Events)
-        let configAdmin = new ConfigAdmin(true, true, true, true, true, true,true)
+        let configAdmin = new ConfigAdmin(true, true, true, true, true, true,true, true, true, 10)
         this._playingAsset = new PlayingAsset(new FrontEndVideo(this._assets[0].description, this._assets[0].duration, this._assets[0].src), states.STOPPED)
         let osdOptions = {
             eventBus: this._eventBus, 

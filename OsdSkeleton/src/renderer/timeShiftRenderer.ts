@@ -1,8 +1,9 @@
 import * as Backbone from 'backbone'
-import { LeftTimeView, RightTimeView, PauseButtonView, StopButtonView, PlayButtonView, FastForwardButtonView, FastBackwardButton, NextButtonView, PreviousButtonView, IndicatorLive, SpeedIndicator } from './view/view';
+import { LeftTimeView, RightTimeView, PauseButtonView, StopButtonView, PlayButtonView, FastForwardButtonView, FastBackwardButton, NextButtonView, PreviousButtonView, IndicatorLive, SpeedIndicator, JumpBackwardTimeView, JumpForwardTimeView } from './view/view';
 import { FrontEndAsset } from '../models/assets/FrontEndAsset';
 import { FrontEndTimeShift } from '../models/assets/FrontEndTimeShift';
 import { Button } from '../models/button';
+import { ConfigToDisplay } from '../models/config';
 export class TimeShiftRenderer extends Backbone.View<Backbone.Model>{
     private _template: any
     private _startTime: any
@@ -17,17 +18,13 @@ export class TimeShiftRenderer extends Backbone.View<Backbone.Model>{
     private _fastBackwardButton: FastBackwardButton
     private _nextButton: NextButtonView
     private _previousButton: PreviousButtonView
+    private _jumpBackwardTimeButton: JumpBackwardTimeView
+    private _jumpForwardTimeButton: JumpForwardTimeView
     private _liveView: IndicatorLive
     private _speedInidicator: SpeedIndicator
 
-    constructor(asset: FrontEndAsset) {
+    constructor(asset: FrontEndAsset, configToDisplay: ConfigToDisplay) {
         super()
-        this._startTime = (<FrontEndTimeShift>asset).getStartTime()
-        this._endTime = (<FrontEndTimeShift>asset).getEndTime()
-        this.updateLeftTime(this._startTime)
-        this.updateRightTime(this._endTime)
-    }
-    initialize() {
         this._template = require("ejs-compiled-loader!./timeShiftRenderer.ejs")
         this._startTimeView = new LeftTimeView()
         this._endTimeView = new RightTimeView()
@@ -38,9 +35,14 @@ export class TimeShiftRenderer extends Backbone.View<Backbone.Model>{
         this._fastForwardButton = new FastForwardButtonView()
         this._nextButton = new NextButtonView()
         this._previousButton = new PreviousButtonView()
+        this._jumpBackwardTimeButton = new JumpBackwardTimeView(configToDisplay.jumpTime)
+        this._jumpForwardTimeButton = new JumpForwardTimeView(configToDisplay.jumpTime)
         this._liveView = new IndicatorLive(false)
         this._speedInidicator = new SpeedIndicator()
-        
+        this._startTime = (<FrontEndTimeShift>asset).getStartTime()
+        this._endTime = (<FrontEndTimeShift>asset).getEndTime()
+        this.updateLeftTime(this._startTime)
+        this.updateRightTime(this._endTime)
     }
     render() {
         this.$el.html(this._template())
@@ -53,6 +55,8 @@ export class TimeShiftRenderer extends Backbone.View<Backbone.Model>{
         this.$("#fastForwardButton").html(this._fastForwardButton.render().el)
         this.$("#nextButton").html(this._nextButton.render().el)
         this.$("#previousButton").html(this._previousButton.render().el)
+        this.$("#jumpBackwardTimeButton").html(this._jumpBackwardTimeButton.render().el)
+        this.$("#jumpForwardTimeButton").html(this._jumpForwardTimeButton.render().el)
         this.$("#liveView").html(this._liveView.render().el)
         this.$("#speedIndicator").html(this._speedInidicator.render().el)
         return this
@@ -135,6 +139,22 @@ export class TimeShiftRenderer extends Backbone.View<Backbone.Model>{
         }
         else {
             this._previousButton.hideButton()
+        }
+    }
+    public updateJumpBackwardTimeButton(value: Button): void {
+        if(value.display) {
+            this._jumpBackwardTimeButton.showButton()
+        }
+        else {
+            this._jumpBackwardTimeButton.hideButton()
+        }
+    }
+    public updateJumpForwardTimeButton(value: Button): void {
+        if(value.display) {
+            this._jumpForwardTimeButton.showButton()
+        }
+        else {
+            this._jumpForwardTimeButton.hideButton()
         }
     }
     removeView(): void {

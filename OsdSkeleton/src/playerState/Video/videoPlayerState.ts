@@ -109,6 +109,26 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
         } 
         return this
     }
+
+    public jumpBackwardTime(time: number): IPlayerState {
+        try {
+            let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
+            this._stateMachine.jumpBackwardTime(domVideo, time)
+        }catch(err) {
+            console.log(err)
+        }
+        return this
+    }
+
+    public jumpForwardTime(time: number): IPlayerState {
+        try {
+            let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
+            this._stateMachine.jumpForwardTime(domVideo, time)
+        }catch(err) {
+            console.log(err)
+        }
+        return this
+    }
     public removeView(): void {
         this._currentSpeedIndex = 0
         this._playingAsset.speed = this._currentSpeedIndex

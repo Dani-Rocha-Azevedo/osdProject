@@ -1,17 +1,21 @@
 import * as Backbone from 'backbone'
 import { Button } from './button';
-export class ConfigToDisplay extends Backbone.Model{
+export class ConfigToDisplay extends Backbone.Model {
 
     constructor(playButton: Button, stopButton: Button, pauseButton: Button,
-         fastBackwardButton: Button, fastfrowardButton: Button, nextButton: Button, previousButton: Button ) {
-             super()
+        fastBackwardButton: Button, fastfrowardButton: Button, nextButton: Button, previousButton: Button,
+        jumpBackwardTimeButton: Button, jumpForwardTimeButton: Button, jumpTime?: number) {
+        super()
         this.playButton = playButton
         this.pauseButton = pauseButton
         this.stopButton = stopButton
         this.fastBackwardButton = fastBackwardButton
         this.fastForwardButton = fastfrowardButton
         this.nextButton = nextButton
+        this.jumpBackwardTimeButton = jumpBackwardTimeButton
+        this.jumpForwardTimeButton = jumpForwardTimeButton
         this.previousButton = previousButton
+        this.jumpTime = jumpTime
     }
     /**
      * Getters and setters
@@ -58,22 +62,23 @@ export class ConfigToDisplay extends Backbone.Model{
     public set previousButton(value: Button) {
         this.set('previousButton', value)
     }
-
-    /**
-     * utilitarian functions
-     */
-    public getConfig(): { [name: string]: any } {
-        var config = {
-            indicatorClass : this.get('indicatorClass'),
-            playButton : this.get('playButton'),
-            stopButton : this.get('stopButton'),
-            pauseButton : this.get('pauseButton'),
-            fastBackwardButton : this.get('fastBackwardButton'),
-            fastForwardButton : this.get('fastForwardButton'),
-            nextButton: this.get('nextButton'), 
-            previousButton: this.get('previousButton'),
-        }
-        return config
+    public get jumpBackwardTimeButton(): Button {
+        return this.get('jumpBackwardTimeButton')
+    }
+    public set jumpBackwardTimeButton(value: Button) {
+        this.set('jumpBackwardTimeButton', value)
+    }
+    public get jumpForwardTimeButton(): Button {
+        return this.get('jumpForwardTimeButton')
+    }
+    public set jumpForwardTimeButton(value: Button) {
+        this.set('jumpForwardTimeButton', value)
+    }
+    public get jumpTime(): number | undefined {
+        return this.get('jumpTime')
+    }
+    public set jumpTime(value: number | undefined) {
+        this.set('jumpTime', value)
     }
     /**
      * Hide all buttons
@@ -86,6 +91,9 @@ export class ConfigToDisplay extends Backbone.Model{
         this.get('fastForwardButton').display = false
         this.get('nextButton').display = false
         this.get('previousButton').display = false
+        this.get('jumpForwardTimeButton').display = false
+        this.get('jumpBackwardTimeButton').display = false
+
     }
     /**
      * display all buttons
@@ -99,6 +107,8 @@ export class ConfigToDisplay extends Backbone.Model{
         this.get('fastForwardButton').display = true
         this.get('nextButton').display = true
         this.get('previousButton').display = true
+        this.get('jumpForwardTimeButton').display = true
+        this.get('jumpBackwardTimeButton').display = true
     }
 }
 export class ConfigAdmin {
@@ -109,59 +119,84 @@ export class ConfigAdmin {
     private _fastForwardButton: boolean
     private _nextButton: boolean
     private _previousButton: boolean
+    private _jumpBackwardTimeButton: boolean
+    private _jumpForwardTimeButton: boolean
+    private _jumpTime?: number
     constructor(playButton: boolean, stopButton: boolean, pauseButton: boolean,
-        fastBackwardButton: boolean, fastfrowardButton: boolean, nextButton: boolean, previousButton: boolean ) {
-       this._playButton = playButton
-       this._pauseButton = pauseButton
-       this._stopButton = stopButton
-       this._fastBackwardButton = fastBackwardButton
-       this._fastForwardButton = fastfrowardButton
-       this._nextButton = nextButton
-       this._previousButton = previousButton
-   }
-   /**
-    * Getters and setters
-    */
-   public get fastForwardButton(): boolean {
-       return this._fastForwardButton
-   }
-   public set fastForwardButton(value: boolean) {
-       this.fastForwardButton = value
-   }
-   public get fastBackwardButton(): boolean {
-       return this._fastBackwardButton
-   }
-   public set fastBackwardButton(value: boolean) {
-       this._fastBackwardButton = value
-   }
-   public get pauseButton(): boolean {
-       return this._pauseButton
-   }
-   public set pauseButton(value: boolean) {
-       this._pauseButton = value
-   }
-   public get stopButton(): boolean {
-       return this._stopButton
-   }
-   public set stopButton(value: boolean) {
-       this.stopButton = value
-   }
-   public get playButton(): boolean {
-       return this._playButton
-   }
-   public set playButton(value: boolean) {
-       this._playButton = value 
-   }
-   public get nextButton(): boolean {
-       return this._nextButton
-   }
-   public set nextButton(value: boolean) {
-       this._nextButton = value
-   }
-   public get previousButton(): boolean {
-       return this._previousButton
-   }
-   public set previousButton(value: boolean) {
-       this._previousButton = value
-   }
+        fastBackwardButton: boolean, fastfrowardButton: boolean, nextButton: boolean, previousButton: boolean,
+        jumpBackwardTimeButton: boolean, jumpForwardTimeButton: boolean, jumpTime?: number) {
+        this._playButton = playButton
+        this._pauseButton = pauseButton
+        this._stopButton = stopButton
+        this._fastBackwardButton = fastBackwardButton
+        this._fastForwardButton = fastfrowardButton
+        this._nextButton = nextButton
+        this._previousButton = previousButton
+        this._jumpBackwardTimeButton = jumpBackwardTimeButton
+        this._jumpForwardTimeButton = jumpForwardTimeButton
+        this._jumpTime = jumpTime
+    }
+    /**
+     * Getters and setters
+     */
+    public get fastForwardButton(): boolean {
+        return this._fastForwardButton
+    }
+    public set fastForwardButton(value: boolean) {
+        this.fastForwardButton = value
+    }
+    public get fastBackwardButton(): boolean {
+        return this._fastBackwardButton
+    }
+    public set fastBackwardButton(value: boolean) {
+        this._fastBackwardButton = value
+    }
+    public get pauseButton(): boolean {
+        return this._pauseButton
+    }
+    public set pauseButton(value: boolean) {
+        this._pauseButton = value
+    }
+    public get stopButton(): boolean {
+        return this._stopButton
+    }
+    public set stopButton(value: boolean) {
+        this.stopButton = value
+    }
+    public get playButton(): boolean {
+        return this._playButton
+    }
+    public set playButton(value: boolean) {
+        this._playButton = value
+    }
+    public get nextButton(): boolean {
+        return this._nextButton
+    }
+    public set nextButton(value: boolean) {
+        this._nextButton = value
+    }
+    public get previousButton(): boolean {
+        return this._previousButton
+    }
+    public set previousButton(value: boolean) {
+        this._previousButton = value
+    }
+    public get jumpBackwardTimeButton(): boolean {
+        return this._jumpBackwardTimeButton
+    }
+    public set jumpBackwardTimeButton(value: boolean) {
+        this._jumpBackwardTimeButton = value
+    }
+    public get jumpForwardTimeButton(): boolean {
+        return this._jumpForwardTimeButton
+    }
+    public set jumpForwardTimeButton(value: boolean) {
+        this._jumpForwardTimeButton = value
+    }
+    public get jumpTime(): number | undefined{
+        return this._jumpTime
+    }
+    public set jumpTime(value: number | undefined) {
+        this._jumpTime = value
+    }
 }

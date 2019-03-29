@@ -38,6 +38,8 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         this._eventBus.on("pause", this._pause, this)
         this._eventBus.on("backward", this._fastBackward, this)
         this._eventBus.on("fastForward", this._fastForward, this)
+        this._eventBus.on("jumpBackwardTime", this._jumpBackwardTime, this)
+        this._eventBus.on("jumpForwardTime", this._jumpForwardTime, this)
         this._eventBus.on("refreshPlayerState", this._refreshPlayerState, this)
     }
     /**
@@ -120,6 +122,18 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
      */
     private _fastForward() {
         this.playerState = this.playerState.fastForward()
+    }
+    /**
+     * Demand to player to jump on asset
+     */
+    private _jumpBackwardTime(time: number) {
+        this.playerState = this.playerState.jumpBackwardTime(time)
+    }
+    /**
+     * Demand to player to jump on asset
+     */
+    private _jumpForwardTime(time: number) {
+        this.playerState = this.playerState.jumpForwardTime(time)
     }
     /**
      * Launch when the state is updated

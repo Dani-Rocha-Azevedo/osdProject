@@ -4,6 +4,7 @@ import { FrontEndAsset } from '../models/assets/FrontEndAsset';
 import { FrontEndLiveChannel } from '../models/assets/FrontEndLiveChannel';
 import { IRenderer } from './IRenderer';
 import { Button } from '../models/button';
+import { ConfigToDisplay } from '../models/config';
 export class LiveChannelRenderer extends Backbone.View<Backbone.Model> implements IRenderer{
     private _template: any
     private _startTime: any
@@ -14,12 +15,11 @@ export class LiveChannelRenderer extends Backbone.View<Backbone.Model> implement
     private _pauseButton: PauseButtonView
     private _stopButton: StopButtonView
     private _playButton: PlayButtonView
-    private _fastForwardButton: FastForwardButtonView
     private _fastBackwardButton: FastBackwardButton
     private _nextButton: NextButtonView
     private _previousButton: PreviousButtonView
     private _liveView: IndicatorLive
-    constructor(asset: FrontEndAsset) {
+    constructor(asset: FrontEndAsset, configToDisplay: ConfigToDisplay) {
         super()
         this._startTime = (<FrontEndLiveChannel> asset).getStartTime()
         this._endTime = (<FrontEndLiveChannel> asset).getEndTime()
@@ -89,18 +89,12 @@ export class LiveChannelRenderer extends Backbone.View<Backbone.Model> implement
         }
     }
     public updateFastForwardButton(value: Button) {
-        // if(value.display) {
-        //     this._fastForwardButton.showButton()
-        //     if(value.active) {
-        //         this._fastForwardButton.activeButton()
-        //     }
-        //     else {
-        //         this._fastForwardButton.desactivateButton()
-        //     }
-        // }
-        // else {
-        //     this._fastForwardButton.hideButton()
-        // }
+        // LiveChannel don't handle this button
+    }
+    public updateJumpBackwardTimeButton(value: Button): void {
+        // LiveChannel don't handle this button
+    }
+    public updateJumpForwardTimeButton(value: Button): void {
         // LiveChannel don't handle this button
     }
     public updateFastBackwardButton(value: Button) {

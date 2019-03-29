@@ -9,6 +9,7 @@ import State = fsm.State
 import { StateMachine } from './osdStateMachine';
 import { RendererFactory } from './rendererFactory';
 import { IRenderer } from '../renderer/IRenderer';
+import { timingSafeEqual } from 'crypto';
 export class OsdLayer extends Backbone.View<any> {
     private _template: any
     private _configAdmin : ConfigAdmin
@@ -27,8 +28,8 @@ export class OsdLayer extends Backbone.View<any> {
         this._configAdmin = options.config
         this._stateMachine = new StateMachine(this._playingAsset.state)
         this._rendererFactory = new RendererFactory()
-        this._renderer = this._rendererFactory.makeRenderer(this._playingAsset.asset)
         this._createConfigOSD()
+        this._renderer = this._rendererFactory.makeRenderer(this._playingAsset.asset, this._configToDisplay)
 
         if(this._playingAsset) {
             this.listenTo(this._playingAsset, 'change:currentPosition', this._updateLeftTime)
@@ -57,7 +58,9 @@ export class OsdLayer extends Backbone.View<any> {
             'click #fastBackwardButton': '_backward',
             'click #fastForwardButton': '_forward',
             'click #previousButton': '_previous',
-            'click #nextButton': '_next'
+            'click #nextButton': '_next',
+            'click #jumpBackwardTimeButton' : '_jumpBackwardTime',
+            'click #jumpForwardTimeButton' : '_jumpForwardTime'
         }
     }
     
@@ -78,12 +81,15 @@ export class OsdLayer extends Backbone.View<any> {
             new Button(this._configAdmin.fastBackwardButton, false),
             new Button(this._configAdmin.fastForwardButton, false),
             new Button(this._configAdmin.nextButton, false),
-            new Button(this._configAdmin.previousButton, false)
+            new Button(this._configAdmin.previousButton, false),
+            new Button(this._configAdmin.jumpBackwardTimeButton, false),
+            new Button(this._configAdmin.jumpForwardTimeButton, false),
+            this._configAdmin.jumpTime
         )
     }
     private _assetUpdated(){
         this._renderer.removeView()
-        this._renderer = this._rendererFactory.makeRenderer(this._playingAsset.asset)
+        this._renderer = this._rendererFactory.makeRenderer(this._playingAsset.asset, this._configToDisplay)
         this._firstDisplay()
     }
     /**
@@ -106,6 +112,8 @@ export class OsdLayer extends Backbone.View<any> {
         this._updatePreviousButton()
         this._updatePlayButton()
         this._updateStopButton()
+        this._updateJumpBackwardTimeButton()
+        this._updateJumpForwardTimeButton()
         this._onEnterState()
         this.render()
     }
@@ -167,29 +175,31 @@ export class OsdLayer extends Backbone.View<any> {
         this.listenTo(this._configToDisplay.fastForwardButton, 'change', this._updateFastForwardButton)
         this.listenTo(this._configToDisplay.nextButton, 'change', this._updateNextButton)
         this.listenTo(this._configToDisplay.previousButton, 'change', this._updatePreviousButton)
+        this.listenTo(this._configToDisplay.jumpBackwardTimeButton, 'change', this._updateJumpBackwardTimeButton)
+        this.listenTo(this._configToDisplay.jumpForwardTimeButton, 'change', this._updateJumpForwardTimeButton)
     }
      /**
-     * Launch whe a use click on play button
+     * Launch when a user click on play button
      * Send a trigger "play"
      */
     private _play() {
         this._eventBus.trigger("play")
     }
     /**
-     * Launch whe a use click on pause button
+     * Launch when a user click on pause button
      * Send a trigger "pause"
      */
     private _pause() {
         this._eventBus.trigger("pause")
     }
     /**
-     * Launch whe a use click on stop button
+     * Launch when a user click on stop button
      * Send a trigger "stop"
      */
     private _stop() {
         this._eventBus.trigger("stop")
     /**
-     * Launch whe a use click on backward button
+     * Launch when a user click on backward button
      * Send a trigger "backward"
      */
     }
@@ -197,25 +207,39 @@ export class OsdLayer extends Backbone.View<any> {
         this._eventBus.trigger("backward")
     }
     /**
-     * Launch whe a use click on fast forward button
+     * Launch whe a user click on fast forward button
      * Send a trigger "fastForward"
      */
     private _forward() {
         this._eventBus.trigger("fastForward")
     }
     /**
-     * Launch whe a use click on next button
+     * Launch when a user click on next button
      * Send a trigger "next"
      */
     private _next() {
         this._eventBus.trigger("next")
     }
     /**
-     * Launch whe a use click on previous button
+     * Launch when a user click on previous button
      * Send a trigger "previous"
      */
     private _previous() {
         this._eventBus.trigger("previous")
+    }
+    /**
+     * Launch when a user click on jumpBackwardTime button
+     * Send a trigger "jumpBackwardTime"
+     */
+    private _jumpBackwardTime() {
+        this._eventBus.trigger("jumpBackwardTime", this._configAdmin.jumpTime)
+    }
+    /**
+     * Launch when a user click on jumpForwardTime button
+     * Send a trigger "jumpForwardTime"
+     */
+    private _jumpForwardTime() {
+        this._eventBus.trigger("jumpForwardTime", this._configAdmin.jumpTime)
     }
      /**
      * Current position updated
@@ -266,5 +290,11 @@ export class OsdLayer extends Backbone.View<any> {
      */
     private _updatePreviousButton() {
         this._renderer.updatePreviousButton(this._configToDisplay.previousButton)
+    }
+    private _updateJumpBackwardTimeButton() {
+        this._renderer.updateJumpBackwardTimeButton(this._configToDisplay.jumpBackwardTimeButton)
+    }
+    private _updateJumpForwardTimeButton() {
+        this._renderer.updateJumpForwardTimeButton(this._configToDisplay.jumpForwardTimeButton)
     }
 }

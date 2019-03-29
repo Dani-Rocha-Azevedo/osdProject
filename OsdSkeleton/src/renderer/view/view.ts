@@ -16,7 +16,7 @@ export class LeftTimeView extends Backbone.View<Backbone.Model> {
         this.render()
     }
     render() {
-        this.$el.html(this.template({currentTime: this.currentTime}))
+        this.$el.html(this.template({ currentTime: this.currentTime }))
         return this
     }
 }
@@ -40,7 +40,7 @@ export class RightTimeView extends Backbone.View<Backbone.Model> {
         this.render()
     }
     render() {
-        this.$el.html(this.template({duration: this.duration}))
+        this.$el.html(this.template({ duration: this.duration }))
         return this
     }
 }
@@ -55,15 +55,15 @@ export class PlayButtonView extends Backbone.View<Backbone.Model> {
         this.template = require("ejs-compiled-loader!./playButton.ejs")
         this.display = "none"
     }
- 
-    
+
+
     /**
      *display the play button 
      *OSD calls this function to display the button
      */
     showButton() {
-       this.display = "show"
-       this.render()
+        this.display = "show"
+        this.render()
     }
     /**
      * Hide the play button
@@ -74,7 +74,7 @@ export class PlayButtonView extends Backbone.View<Backbone.Model> {
         this.render()
     }
     render() {
-        this.$el.html(this.template({display: this.display}))
+        this.$el.html(this.template({ display: this.display }))
         return this
     }
 }
@@ -95,8 +95,8 @@ export class StopButtonView extends Backbone.View<Backbone.Model> {
      *OSD calls this function to display the button
      */
     showButton() {
-       this.display = "show"
-       this.render()
+        this.display = "show"
+        this.render()
     }
     /**
      * Hide the stop button
@@ -108,7 +108,7 @@ export class StopButtonView extends Backbone.View<Backbone.Model> {
     }
 
     render() {
-        this.$el.html(this.template({display: this.display}))
+        this.$el.html(this.template({ display: this.display }))
         return this
     }
 }
@@ -122,14 +122,14 @@ export class PauseButtonView extends Backbone.View<Backbone.Model> {
         this.template = require("ejs-compiled-loader!./pauseButton.ejs")
         this.display = "none"
     }
-  
+
     /**
      *display the pause button 
      *OSD callss this function to display the button
      */
     showButton() {
-       this.display = "show"
-       this.render()
+        this.display = "show"
+        this.render()
     }
     /**
      * Hide the pause button
@@ -146,7 +146,7 @@ export class PauseButtonView extends Backbone.View<Backbone.Model> {
         console.log("desactivate backward")
     }
     render() {
-        this.$el.html(this.template({display: this.display}))
+        this.$el.html(this.template({ display: this.display }))
         return this
     }
 }
@@ -168,8 +168,8 @@ export class FastBackwardButton extends Backbone.View<Backbone.Model> {
      *OSD calls this function to display the button
      */
     showButton() {
-       this.display = "show"
-       this.render()
+        this.display = "show"
+        this.render()
     }
     /**
      * Hide the fastBackward button
@@ -179,13 +179,13 @@ export class FastBackwardButton extends Backbone.View<Backbone.Model> {
         this.display = "none"
         this.render()
     }
-        
+
     /**
      * add a style from the button
      */
     activeButton() {
-       this.active = "btn-warning"
-       this.render()
+        this.active = "btn-warning"
+        this.render()
     }
     /**
      * remove a style from the button
@@ -195,7 +195,7 @@ export class FastBackwardButton extends Backbone.View<Backbone.Model> {
         this.render()
     }
     render() {
-        this.$el.html(this.template({active: this.active, display: this.display}))
+        this.$el.html(this.template({ active: this.active, display: this.display }))
         return this
     }
 }
@@ -211,14 +211,14 @@ export class FastForwardButtonView extends Backbone.View<Backbone.Model> {
         this.display = "none"
         this.active = "btn-primary"
     }
- 
+
     /**
      *display the fastForwardButton button 
      *OSD calls this function to display the button
      */
     showButton() {
-       this.display = "show"
-       this.render()
+        this.display = "show"
+        this.render()
     }
     /**
      * Hide the fastForward button
@@ -243,7 +243,7 @@ export class FastForwardButtonView extends Backbone.View<Backbone.Model> {
         this.render()
     }
     render() {
-        this.$el.html(this.template({active: this.active, display: this.display}))
+        this.$el.html(this.template({ active: this.active, display: this.display }))
         return this
     }
 }
@@ -264,8 +264,8 @@ export class NextButtonView extends Backbone.View<Backbone.Model> {
      *OSD calls this function to display the button
      */
     showButton() {
-       this.display = "show"
-       this.render()
+        this.display = "show"
+        this.render()
     }
     /**
      * Hide the next button
@@ -276,7 +276,7 @@ export class NextButtonView extends Backbone.View<Backbone.Model> {
         this.render()
     }
     render() {
-        this.$el.html(this.template({display: this.display}))
+        this.$el.html(this.template({ display: this.display }))
         return this
     }
 }
@@ -291,14 +291,14 @@ export class PreviousButtonView extends Backbone.View<Backbone.Model> {
         this.template = require("ejs-compiled-loader!./previousButton.ejs")
         this.display = "none"
     }
-  
+
     /**
      *display the previous button 
      *OSD calls this function to display the button
      */
     showButton() {
-       this.display = "show"
-       this.render()
+        this.display = "show"
+        this.render()
     }
     /**
      * Hide the previous button
@@ -309,7 +309,70 @@ export class PreviousButtonView extends Backbone.View<Backbone.Model> {
         this.render()
     }
     render() {
-        this.$el.html(this.template({display: this.display}))
+        this.$el.html(this.template({ display: this.display }))
+        return this
+    }
+}
+export class JumpBackwardTimeView extends Backbone.View<Backbone.Model> {
+    private template: any
+    private display: string
+    private time?: number
+    constructor(time?: number) {
+        super()
+        this.template = require("ejs-compiled-loader!./jumpBackwardTime.ejs")
+        this.display = "none"
+        this.time = time
+    }
+    /**
+    *display the jumpBackwardTime button 
+    *OSD calls this function to display the button
+    */
+    showButton() {
+        this.display = "show"
+        this.render()
+    }
+    /**
+     * Hide the jumpBackwardTime button
+     * OSD callss this function to hide the button
+     */
+    hideButton() {
+        this.display = "none"
+        this.render()
+    }
+    render() {
+        this.$el.html(this.template({ display: this.display, time: this.time || 0}))
+        return this
+    }
+}
+export class JumpForwardTimeView extends Backbone.View<Backbone.Model> {
+    private template: any
+    private display: string
+    private time?: number
+    constructor(time?: number) {
+        super()
+        this.template = require("ejs-compiled-loader!./jumpForwardTime.ejs")
+        this.time = time
+        this.display = "none"
+    }
+    /**
+    *display the jumpForwardTime button 
+    *OSD calls this function to display the button
+    */
+    showButton() {
+        this.display = "show"
+        this.render()
+    }
+    /**
+     * Hide the jumpForwardTime button
+     * OSD callss this function to hide the button
+     */
+    hideButton() {
+        this.display = "none"
+        this.render()
+    }
+    render() {
+
+        this.$el.html(this.template({ display: this.display, time: this.time || 0}))
         return this
     }
 }
@@ -328,7 +391,7 @@ export class ProgressBarView extends Backbone.View<Backbone.Model> {
         this.render()
     }
     render() {
-        this.$el.html(this._template({percent: this.percent}))
+        this.$el.html(this._template({ percent: this.percent }))
         return this
     }
 
@@ -339,7 +402,7 @@ export class IndicatorLive extends Backbone.View<Backbone.Model> {
     private _classCss: string
     constructor(live: boolean) {
         super()
-        if(live) {
+        if (live) {
             this._valueText = "Live"
             this._classCss = "label-success"
         }
@@ -352,7 +415,7 @@ export class IndicatorLive extends Backbone.View<Backbone.Model> {
         this._template = require("ejs-compiled-loader!./liveIndicator.ejs")
     }
     render() {
-        this.$el.html(this._template({classCss: this._classCss, valueText: this._valueText}))
+        this.$el.html(this._template({ classCss: this._classCss, valueText: this._valueText }))
         return this
     }
 }
@@ -364,7 +427,7 @@ export class SpeedIndicator extends Backbone.View<Backbone.Model> {
         this._speed = ''
     }
     public updateSpeedIndicator(value: number) {
-        if(value === 0) {
+        if (value === 0) {
             this._speed = ''
         }
         else {
@@ -373,7 +436,7 @@ export class SpeedIndicator extends Backbone.View<Backbone.Model> {
         this.render()
     }
     render() {
-        this.$el.html(this._template({speed: this._speed}))
+        this.$el.html(this._template({ speed: this._speed }))
         return this
     }
 }

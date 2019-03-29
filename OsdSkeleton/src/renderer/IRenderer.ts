@@ -53,6 +53,16 @@ export interface IRenderer {
      */
     updatePreviousButton(value: Button): void
     /**
+     * hide or display jumpBackwardTime button
+     * @param value: the button 
+     */
+    updateJumpBackwardTimeButton(value: Button): void
+    /**
+     * hide or display jumpForwardTime button
+     * @param value: the button 
+     */
+    updateJumpForwardTimeButton(value: Button): void
+    /**
      * Removes a view and its $el from the DOM, and calls stopListening to remove any bound events that the view has listenTo.
      */
     removeView(): void

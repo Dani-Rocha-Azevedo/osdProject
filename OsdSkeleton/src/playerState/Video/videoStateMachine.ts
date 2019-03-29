@@ -45,7 +45,7 @@ export class StateMachine extends StateMachineImpl<State> {
             video.play().then(() => {
                 this.setState(states.PLAYING)
             }).catch((err) => {
-                console.log("ok")
+                console.log(err)
             })
         }catch(err) {
             throw new Error("video play: "+err)
@@ -133,6 +133,28 @@ export class StateMachine extends StateMachineImpl<State> {
             throw new Error("video Backward")
         }
         
+    }
+    /**
+     * Jump on the content
+     */
+    @checkStateIn([states.PAUSED, states.PLAYING], "you can't jumpBackward content in stopped/Forwarding/backwarding state")
+    public jumpBackwardTime(video: HTMLMediaElement, position: number): void {
+        try {
+            video.currentTime -= position
+        }catch(err) {
+            throw new Error("video Jump Backward")
+        }
+    }
+    /**
+     * Jump on the content
+     */
+    @checkStateIn([states.PAUSED, states.PLAYING], "you can't jumpForward content in stopped/Forwarding/backwarding state")
+    public jumpForwardTime(video: HTMLMediaElement, position: number): void {
+        try {
+            video.currentTime += position
+        }catch(err) {
+            throw new Error("video Jump Backward")
+        }
     }
 
 
