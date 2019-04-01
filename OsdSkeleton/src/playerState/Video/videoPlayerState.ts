@@ -7,6 +7,7 @@ import { FrontEndVideo } from '../../models/assets/FrontEndVideo';
 import {FrontEndAsset} from '../../models/assets/FrontEndAsset';
 import { states } from '../../utils/constants';
 import { IPlayerState } from '../IPlayerState';
+import { resolveCname } from 'dns';
 export class VideoPlayerState extends Backbone.View<Backbone.Model> implements IPlayerState{
     private _stateMachine: StateMachine
     private _template: any
@@ -45,7 +46,7 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
         }, 1000)
     }
     public postRender(): void {
-        //DO nothing
+        
     }
     public render() {
         if(this._playingAsset.asset) {

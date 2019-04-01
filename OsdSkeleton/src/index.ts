@@ -14,7 +14,16 @@ export class LayerManager extends Backbone.View<Backbone.Model> {
     private _eventBus: any
     private _playingAsset: PlayingAsset
     private _assets: any = [
-      
+        {   duration: 157.000,
+            description: "Ralph BD",
+            src: "https://test.flowr.cloud/ozone/PURD7oFHye",
+            type: assetsType.VIDEO
+        },
+        {   duration: 157.000,
+            description: "Pokemon",
+            src: "https://test.flowr.cloud/ozone/me0oHarrTJ",
+            type: assetsType.VIDEO
+        },
         {
             startTime: "09:10",
             endTime: "09:30",
@@ -23,16 +32,12 @@ export class LayerManager extends Backbone.View<Backbone.Model> {
             realTime: 30,
             type: assetsType.LIVE_CHANNEL
         },
-        {   duration: 157.000,
-            description: "Ralph BD",
-            src: "https://test.flowr.cloud/ozone/PURD7oFHye",
-            type: assetsType.VIDEO
-        },
+       
     ]
     constructor() {
         super()
         this._eventBus = _.extend({}, Backbone.Events)
-        let configAdmin = new ConfigAdmin(true, true, true, true, true, true,true, true, true, 10)
+        let configAdmin = new ConfigAdmin(true, true, true, true, true, true,true, true, true, 35)
         this._playingAsset = new PlayingAsset(new FrontEndVideo(this._assets[0].description, this._assets[0].duration, this._assets[0].src), states.STOPPED)
         let osdOptions = {
             eventBus: this._eventBus, 
@@ -46,7 +51,9 @@ export class LayerManager extends Backbone.View<Backbone.Model> {
         }
         this._playerLayer = new PlayerLayer(playerLayerOptions)
         this._osdLayer = new OsdLayer(osdOptions)
+        $('#player').html(this._playerLayer.render().el)
         $('#osd').html(this._osdLayer.render().el)
+        this._playerLayer.postRender()
     }
 }
 const layerManager = new LayerManager()

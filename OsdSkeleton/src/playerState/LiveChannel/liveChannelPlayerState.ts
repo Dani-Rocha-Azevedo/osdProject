@@ -28,8 +28,8 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
         this.$el.html(this._template({src: this._playingAsset.asset.src}))
         return this
     }
-    public postRender(): void {
-        //do nothing
+    public postRender(): void{
+        
     }
     public play(): IPlayerState {
         let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')

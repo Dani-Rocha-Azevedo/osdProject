@@ -10,7 +10,7 @@ import { PlayerStateFactory } from './playerState/playerStateFactory';
 import { Stack } from './utils/stack';
 import { states } from './utils/constants';
 export class PlayerLayer extends Backbone.View<Backbone.Model>{
-    private osd: OsdLayer
+    private _template: any
     private playerState: IPlayerState
     private playerStateFactory: PlayerStateFactory
     private _eventBus: any
@@ -25,9 +25,17 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         this._playingAsset = options.playingAsset
         this.playerStateFactory = new PlayerStateFactory()
         this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getNext()})
+        this._template = require("ejs-compiled-loader!./playerLayer.ejs")
         this.listenTo(this._playingAsset,'change:state', this._stateUpdated)
         this._initEvent()
-        $('#player').html(this.playerState.render().el)
+        
+    }
+    render() {
+        this.$el.html(this._template())
+        this.$("#playerLayer").html(this.playerState.render().el)
+        return this
+    }
+    postRender() {
         this.playerState.play()
     }
     _initEvent() {
@@ -48,7 +56,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
     private _next() {
         this.playerState.removeView()
         this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getNext()})
-        $("#player").html(this.playerState.render().el)
+        this.$("#playerLayer").html(this.playerState.render().el)
         this.playerState.play()
     }
      /**
@@ -57,7 +65,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
     private _previous() {
         this.playerState.removeView()
         this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getPrevious()})
-        $("#player").html(this.playerState.render().el)
+        this.$("#playerLayer").html(this.playerState.render().el)
         this.playerState.play()
 
     }
@@ -75,7 +83,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         if(playerStateTemp.constructor.name !==  this.playerState.constructor.name) {
             this.playerState.removeView()
             this.playerState = playerStateTemp
-            $("#player").html(this.playerState.render().el)
+            $("#playerLayer").html(this.playerState.render().el)
             this.playerState.postRender()
             //pass to liveChannel
             this.playerState.play()
@@ -92,7 +100,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         if(playerStateTemp.constructor.name !==  this.playerState.constructor.name) {
             this.playerState.removeView()
             this.playerState = playerStateTemp
-            $("#player").html(this.playerState.render().el)
+            $("#playerLayer").html(this.playerState.render().el)
             this.playerState.postRender()
             this.playerState.pause()
         }
@@ -109,7 +117,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         if(playerStateTemp.constructor.name !==  this.playerState.constructor.name) {
             this.playerState.removeView()
             this.playerState = playerStateTemp
-            $("#player").html(this.playerState.render().el)
+            this.$("#playerLayer").html(this.playerState.render().el)
             this.playerState.postRender()
             this.playerState.fastBackward()
         }
@@ -152,7 +160,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
     private _refreshPlayerState() {
         this.playerState.removeView()
         this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getCurrentAsset()})
-        $("#player").html(this.playerState.render().el)
+        this.$("#playerLayer").html(this.playerState.render().el)
         this.playerState.play()
     }
     

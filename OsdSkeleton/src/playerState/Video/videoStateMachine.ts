@@ -44,9 +44,10 @@ export class StateMachine extends StateMachineImpl<State> {
             video.playbackRate = 1
             video.play().then(() => {
                 this.setState(states.PLAYING)
-            }).catch((err) => {
-                console.log(err)
+            }).catch(()=> {
+                console.log(video.readyState)
             })
+
         }catch(err) {
             throw new Error("video play: "+err)
         }
