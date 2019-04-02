@@ -31,6 +31,9 @@ export class PlayingAsset extends Backbone.Model{
     public set currentPosition(value: number) {
         this.set('currentPosition', value)
     }
+    public get currentPosition(): number{ 
+        return this.get('currentPosition')
+    }
     
     public set state(value: State) {
         this.set('state', value)

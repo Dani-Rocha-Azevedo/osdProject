@@ -7,6 +7,7 @@ import { FrontEndLiveChannel } from "../app/models/assets/FrontEndLiveChannel";
 import { states } from "../app/playerState/Video/videoStateMachine";
 import {MockStateMachine} from './mockVideoStateMachine'
 import sinon from "sinon";
+import { MockVideo } from "./mockVideo";
 describe('Test a VOD', function() {
     let asset = 
         {   duration: 157.000,
@@ -26,7 +27,8 @@ describe('Test a VOD', function() {
                 asset: asset,
                 playingAsset:  playingAsset
             }
-            videoPlayerState = new VideoPlayerState(options) 
+            videoPlayerState = new VideoPlayerState(options)
+            videoPlayerState.postRender() 
         })
         afterEach(function() {
             playingAsset = new PlayingAsset(new FrontEndLiveChannel("fake","fake","fake","fake",4), states.STOPPED)
@@ -34,6 +36,7 @@ describe('Test a VOD', function() {
                 asset: asset,
                 playingAsset:  playingAsset
             }
+            videoPlayerState.removeView()
         })
         /**
          * Create a videoPlayerState, OK
@@ -59,6 +62,8 @@ describe('Test a VOD', function() {
             mockStateMachine = new MockStateMachine()
             sandbox.replace<any,any>(videoPlayerState, "_stateMachine", mockStateMachine)
             videoPlayerState._handleChangeState()
+            videoPlayerState.postRender() 
+
         })
         afterEach(function() {
             playingAsset = new PlayingAsset(new FrontEndLiveChannel("fake","fake","fake","fake",4), states.STOPPED)
@@ -67,6 +72,7 @@ describe('Test a VOD', function() {
                 playingAsset:  playingAsset
             }
             sandbox.restore()
+            videoPlayerState.removeView()
         })
         //####################################### TEST PLAY #################################################
         /**
@@ -535,8 +541,195 @@ describe('Test a VOD', function() {
             }
         })
         //####################################### TEST JUMP FORWARD ########################################
-        
-
+        /**
+         * Jump forward a content after play : OK
+         */
+        it('Jump forward a VOD after play', function(done) {
+            this.timeout(3000)
+            let video = new MockVideo()
+            sandbox.replace<any,any>(videoPlayerState, "_video", video)
+            try {
+                videoPlayerState.play()
+                videoPlayerState.jumpForwardTime(20)
+                videoPlayerState.jumpForwardTime(20)
+            }
+            catch(err) {
+                console.log(err.message)
+                assert.isTrue(false)
+            }
+            setTimeout(() => {
+                assert.equal(playingAsset.currentPosition, 40)
+                assert.equal(playingAsset.state.label, states.PLAYING.label)
+                done()
+            }, 2000)
+        })
+        /**
+         * Jump forward a content after pause : OK
+         */
+        it('Jump forward a VOD after pause', function(done) {
+            this.timeout(3000)
+            let video = new MockVideo()
+            sandbox.replace<any,any>(videoPlayerState, "_video", video)
+            try {
+                videoPlayerState.play()
+                videoPlayerState.pause()
+                videoPlayerState.jumpForwardTime(20)
+                videoPlayerState.jumpForwardTime(20)
+            }
+            catch(err) {
+                console.log(err.message)
+                assert.isTrue(false)
+            }
+            setTimeout(() => {
+                assert.equal(playingAsset.currentPosition, 40)
+                assert.equal(playingAsset.state.label, states.PAUSED.label)
+                done()
+            }, 2000)
+        })
+        /**
+         * Jump forward a content after fast backward : KO
+         */
+        it('Jump forward a VOD after fast backward', function() {
+            let video = new MockVideo()
+            sandbox.replace<any,any>(videoPlayerState, "_video", video)
+            try {
+                videoPlayerState.fastBackward()
+                videoPlayerState.jumpForwardTime(20)
+                videoPlayerState.jumpForwardTime(20)
+            }
+            catch(err) {
+                assert.equal(err.message, "you can't jumpForward content in stopped/Forwarding/backwarding state")
+                assert.equal(playingAsset.state.label, states.BACKWARDING.label)
+            }
+        })
+         /**
+         * Jump forward a content after fast forward : KO
+         */
+        it('Jump forward a VOD after fast forward', function() {
+            let video = new MockVideo()
+            sandbox.replace<any,any>(videoPlayerState, "_video", video)
+            try {
+                videoPlayerState.fastForward()
+                videoPlayerState.jumpForwardTime(20)
+                videoPlayerState.jumpForwardTime(20)
+            }
+            catch(err) {
+                assert.equal(err.message, "you can't jumpForward content in stopped/Forwarding/backwarding state")
+                assert.equal(playingAsset.state.label, states.FASTFORWARDING.label)
+            }
+        })
+        /**
+         * Jump forward a content after STOP : KO
+         */
+        it('Jump forward a VOD after fast STOP', function() {
+            let video = new MockVideo()
+            sandbox.replace<any,any>(videoPlayerState, "_video", video)
+            try {
+                videoPlayerState.stop()
+                videoPlayerState.jumpForwardTime(20)
+                videoPlayerState.jumpForwardTime(20)
+            }
+            catch(err) {
+                assert.equal(err.message, "you can't jumpForward content in stopped/Forwarding/backwarding state")
+                assert.equal(playingAsset.state.label, states.STOPPED.label)
+            }
+        })
+        //####################################### TEST JUMP Backward ########################################
+ /**
+         * Jump Backward a content after play : OK
+         */
+        it('Jump Backward a VOD after play', function(done) {
+            this.timeout(3000)
+            let video = new MockVideo()
+            video.currentTime = 60
+            sandbox.replace<any,any>(videoPlayerState, "_video", video)
+            try {
+                videoPlayerState.play()
+                videoPlayerState.jumpBackwardTime(20)
+                videoPlayerState.jumpBackwardTime(20)
+            }
+            catch(err) {
+                console.log(err.message)
+                assert.isTrue(false)
+            }
+            setTimeout(() => {
+                assert.equal(playingAsset.currentPosition, 20)
+                assert.equal(playingAsset.state.label, states.PLAYING.label)
+                done()
+            }, 2000)
+        })
+        /**
+         * Jump backward a content after pause : OK
+         */
+        it('Jump backward a VOD after pause', function(done) {
+            this.timeout(3000)
+            let video = new MockVideo()
+            video.currentTime = 60
+            sandbox.replace<any,any>(videoPlayerState, "_video", video)
+            try {
+                videoPlayerState.play()
+                videoPlayerState.pause()
+                videoPlayerState.jumpBackwardTime(20)
+                videoPlayerState.jumpBackwardTime(20)
+            }
+            catch(err) {
+                console.log(err.message)
+                assert.isTrue(false)
+            }
+            setTimeout(() => {
+                assert.equal(playingAsset.currentPosition, 20)
+                assert.equal(playingAsset.state.label, states.PAUSED.label)
+                done()
+            }, 2000)
+        })
+        /**
+         * Jump backward a content after fast backward : KO
+         */
+        it('Jump backward a VOD after fast backward', function() {
+            let video = new MockVideo()
+            sandbox.replace<any,any>(videoPlayerState, "_video", video)
+            try {
+                videoPlayerState.fastBackward()
+                videoPlayerState.jumpBackwardTime(20)
+                videoPlayerState.jumpBackwardTime(20)
+            }
+            catch(err) {
+                assert.equal(err.message, "you can't jumpBackward content in stopped/Forwarding/backwarding state")
+                assert.equal(playingAsset.state.label, states.BACKWARDING.label)
+            }
+        })
+         /**
+         * Jump backward a content after fast forward : KO
+         */
+        it('Jump backward a VOD after fast forward', function() {
+            let video = new MockVideo()
+            sandbox.replace<any,any>(videoPlayerState, "_video", video)
+            try {
+                videoPlayerState.fastForward()
+                videoPlayerState.jumpBackwardTime(20)
+                videoPlayerState.jumpBackwardTime(20)
+            }
+            catch(err) {
+                assert.equal(err.message, "you can't jumpBackward content in stopped/Forwarding/backwarding state")
+                assert.equal(playingAsset.state.label, states.FASTFORWARDING.label)
+            }
+        })
+        /**
+         * Jump backward a content after STOP : KO
+         */
+        it('Jump backward a VOD after fast STOP', function() {
+            let video = new MockVideo()
+            sandbox.replace<any,any>(videoPlayerState, "_video", video)
+            try {
+                videoPlayerState.stop()
+                videoPlayerState.jumpBackwardTime(20)
+                videoPlayerState.jumpBackwardTime(20)
+            }
+            catch(err) {
+                assert.equal(err.message, "you can't jumpBackward content in stopped/Forwarding/backwarding state")
+                assert.equal(playingAsset.state.label, states.STOPPED.label)
+            }
+        })
     })
     
   });

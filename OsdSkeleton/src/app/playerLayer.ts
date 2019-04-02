@@ -36,6 +36,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         return this
     }
     postRender() {
+        this.playerState.postRender()
         this.playerState.play()
     }
     _initEvent() {
@@ -57,6 +58,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         this.playerState.removeView()
         this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getNext()})
         this.$("#playerLayer").html(this.playerState.render().el)
+        this.playerState.postRender()
         this.playerState.play()
     }
      /**
@@ -66,6 +68,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         this.playerState.removeView()
         this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getPrevious()})
         this.$("#playerLayer").html(this.playerState.render().el)
+        this.playerState.postRender()
         this.playerState.play()
 
     }

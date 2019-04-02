@@ -33,7 +33,7 @@ export class MockStateMachine extends StateMachineImpl<State> {
      * start the content
      */
     @checkStateIn([states.STOPPED, states.PAUSED, states.BACKWARDING, states.FASTFORWARDING], "you can't launch content in playing state")
-    public play(video: HTMLMediaElement): void {
+    public play(video: any): void {
         this.setState(states.PLAYING)
     }
 
@@ -41,7 +41,7 @@ export class MockStateMachine extends StateMachineImpl<State> {
      * Stop the content
      */
     @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't stop content in stopped state")
-    public stop(video: HTMLMediaElement): void {   
+    public stop(video: any): void {   
         this.setState(states.STOPPED)
        
     }
@@ -49,7 +49,7 @@ export class MockStateMachine extends StateMachineImpl<State> {
      * pause the content
      */
     @checkStateIn([states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't pause content in stopped/paused state")
-    public pause(video: HTMLMediaElement): void {
+    public pause(video: any): void {
         this.setState(states.PAUSED)
     }
 
@@ -57,7 +57,7 @@ export class MockStateMachine extends StateMachineImpl<State> {
      * Fast forward the content
      */
     @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't fast forward content in stopped state")
-    public fastForward(video: HTMLMediaElement, speed: number): void {
+    public fastForward(video: any, speed: number): void {
         this.setState(states.FASTFORWARDING)   
     }
 
@@ -65,22 +65,22 @@ export class MockStateMachine extends StateMachineImpl<State> {
      * Backward the content
      */
     @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't rewind content in stopped state")
-    public backward(video: HTMLMediaElement, speed: number): void {
+    public backward(video: any, speed: number): void {
         this.setState(states.BACKWARDING)   
     }
     /**
      * Jump on the content
      */
     @checkStateIn([states.PAUSED, states.PLAYING], "you can't jumpBackward content in stopped/Forwarding/backwarding state")
-    public jumpBackwardTime(video: HTMLMediaElement, position: number): void {
-      
+    public jumpBackwardTime(video: any, position: number): void {
+        video.currentTime  -= position
     }
     /**
      * Jump on the content
      */
     @checkStateIn([states.PAUSED, states.PLAYING], "you can't jumpForward content in stopped/Forwarding/backwarding state")
-    public jumpForwardTime(video: HTMLMediaElement, position: number): void {
-        
+    public jumpForwardTime(video: any, position: number): void {
+        video.currentTime += position
     }
 
 
