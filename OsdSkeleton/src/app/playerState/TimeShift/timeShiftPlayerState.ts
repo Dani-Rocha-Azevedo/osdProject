@@ -52,6 +52,7 @@ export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implemen
             (<FrontEndTimeShift>this._playingAsset.asset).setRealTime(realTime + 1)
         }, 1000)
         this._intervalRealTime = setInterval(() => {
+
             this._bufferFinished()
         }, 10)
 

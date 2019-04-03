@@ -58,7 +58,7 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
         let asset = <FrontEndLiveChannel>this._playingAsset.asset
         let timeShiftAsset = new FrontEndTimeShift(asset.description, asset.getStartTime(), asset.getEndTime(),
                 asset.src, this._video.currentTime)
-        return new TimeShiftPlayerState({playingAsset: this._playingAsset, asset: timeShiftAsset, state: states.BACKWARDING})
+        return new TimeShiftPlayerState({eventBus:this._eventBus, playingAsset: this._playingAsset, asset: timeShiftAsset, state: states.BACKWARDING})
     }
     /**
      * Jump backward
@@ -67,7 +67,7 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
         let asset = <FrontEndLiveChannel>this._playingAsset.asset
         let timeShiftAsset = new FrontEndTimeShift(asset.description, asset.getStartTime(), asset.getEndTime(),
                 asset.src, this._video.currentTime - time)
-        return new TimeShiftPlayerState({playingAsset: this._playingAsset, asset: timeShiftAsset, state: states.BACKWARDING})
+        return new TimeShiftPlayerState({eventBus:this._eventBus, playingAsset: this._playingAsset, asset: timeShiftAsset, state: states.PLAYING})
     }
     /**
      * Never used in a liveChannel asset
