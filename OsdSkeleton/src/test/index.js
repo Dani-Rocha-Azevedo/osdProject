@@ -1,1 +1,2 @@
-import './vod.spec'
+import './videoPlayerState/vod.spec'
+import './liveChannelPlayerState/live.spec'

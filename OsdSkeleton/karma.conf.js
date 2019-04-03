@@ -1,8 +1,9 @@
+const path = require('path')
 
 module.exports = function(config) {
     config.set({
         basePath: '',
-        frameworks: ["mocha", "chai", "sinon"],
+        frameworks: ["mocha"],
         
         exclude: [],
         files: [
@@ -11,30 +12,11 @@ module.exports = function(config) {
         preprocessors: {
             "src/test/index.js": ["webpack"],
         },
-        reporters: ['progress'],
+        reporters: ['progress','coverage-istanbul'],
+        
 
-        // karmaTypescriptConfig: {
-        //     compilerOptions: {
-        //       "target": "es5",
-        //       module: "commonjs",
-        //       "moduleResolution": "node",
-        //       "experimentalDecorators": true,
-        //       //
-        //       "emitDecoratorMetadata": true,
-        //       /* Strict Type-Checking Options */
-        //      // "strict": true,                           /* Enable all strict type-checking options. */
-        //       "strictNullChecks": true,
-        //       "noImplicitThis": true,
-        //       // "noImplicitAny": true,
-        //       "allowSyntheticDefaultImports": true,
-        //       "lib": ["es2017", "es6", "es5", "dom"],
-        //       "sourceMap": true,
-        //       "outDir": "./dist",
-        //       "baseUrl": "./",
-        //       allowJs: true,
-        //     },
-        //   },
-        //autoWatch: true,
+  
+        autoWatch: true,
         webpack : {
             entry: "./src/test/index.js",
             resolve: {
@@ -50,12 +32,29 @@ module.exports = function(config) {
                 {
                   test: /\.mp4$/,
                   loader: 'url-limit=10000&mimetype=video/mp4'
+                },
+                {
+                  test: /\.([jt])s$/,
+                  enforce: 'post',
+                  exclude: /(node_modules)/,
+                  use: {
+                    loader: 'istanbul-instrumenter-loader',
+                    options: {esModules: true}
+                  }
                 }
               ]
             },
             node: {
               fs: 'empty'
             }
+        },
+        coverageIstanbulReporter: {
+          reports: [ 'html', 'text-summary' ],
+          dir: path.join(__dirname, 'coverage'),
+          fixWebpackSourcePaths: true,
+          'report-config': {
+            html: { outdir: 'html' }
+          }
         },
        
         browsers: ["Chrome"],

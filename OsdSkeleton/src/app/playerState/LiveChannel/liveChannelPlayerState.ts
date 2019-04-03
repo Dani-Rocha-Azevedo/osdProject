@@ -12,6 +12,7 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
     private _playingAsset: PlayingAsset
     private _interval?: any
     private _eventBus: any
+    private _video: any
     constructor(options: any) {
         super()
         this._template = require("ejs-compiled-loader!./liveChannelPlayerState.ejs")
@@ -29,58 +30,50 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
         return this
     }
     public postRender(): void{
-        
+        this._video = <HTMLMediaElement>document.getElementById('playerVideo')
     }
     public play(): IPlayerState {
-        let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-        try {
-            this._stateMachine.play(domVideo, (<FrontEndLiveChannel>this._playingAsset.asset).getRealTime())
-        }catch(err) {
-            console.log(err)
-        }
+        this._stateMachine.play(this._video, (<FrontEndLiveChannel>this._playingAsset.asset).getRealTime())
         return this
     }
     public stop(): IPlayerState {
-        //TODO
         return this
     }
     public pause(): IPlayerState {
-        let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
-            //Create a FrontEndTimeShift
+        //Create a FrontEndTimeShift
             //Create a TimeShiftPlayerState
             //Return the timeShiftPlayerState
         let asset = <FrontEndLiveChannel>this._playingAsset.asset
         let timeShiftAsset = new FrontEndTimeShift(asset.description, asset.getStartTime(), asset.getEndTime(),
-                asset.src, domVideo.currentTime)
+                asset.src, this._video.currentTime)
         return new TimeShiftPlayerState({eventBus:this._eventBus, playingAsset: this._playingAsset, asset: timeShiftAsset, state: states.PAUSED})
     }
     public fastForward(): IPlayerState {
-        // Not handled 
-        return this
+        throw new Error("You can't fast forward a live channel")
     }
     public fastBackward(): IPlayerState {
-        let domVideo =<HTMLMediaElement>document.getElementById('playerVideo')
             //Create a FrontEndTimeShift
             //Create a TimeShiftPlayerState
             //Return the timeShiftPlayerState
         let asset = <FrontEndLiveChannel>this._playingAsset.asset
         let timeShiftAsset = new FrontEndTimeShift(asset.description, asset.getStartTime(), asset.getEndTime(),
-                asset.src, domVideo.currentTime)
+                asset.src, this._video.currentTime)
+        return new TimeShiftPlayerState({playingAsset: this._playingAsset, asset: timeShiftAsset, state: states.BACKWARDING})
+    }
+    /**
+     * Jump backward
+     */
+    public jumpBackwardTime(time: number): IPlayerState {
+        let asset = <FrontEndLiveChannel>this._playingAsset.asset
+        let timeShiftAsset = new FrontEndTimeShift(asset.description, asset.getStartTime(), asset.getEndTime(),
+                asset.src, this._video.currentTime - time)
         return new TimeShiftPlayerState({playingAsset: this._playingAsset, asset: timeShiftAsset, state: states.BACKWARDING})
     }
     /**
      * Never used in a liveChannel asset
      */
-    public jumpBackwardTime(): IPlayerState {
-        console.log("backwardTime LiveChannel")
-        return this
-    }
-    /**
-     * Never used in a liveChannel asset
-     */
     public jumpForwardTime(): IPlayerState {
-        console.log("forwardTime LiveChannel")
-        return this
+        throw new Error("You can't fast jump forward a live channel")
     }
     public removeView(): void {
         clearInterval(this._interval)
@@ -90,7 +83,7 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
         return this
     }
     
-    private _handleChangeState() {
+    public _handleChangeState() {
         this._stateMachine.onEnterState(states.PAUSED, ()=> {
             this._playingAsset.state = states.PAUSED
             

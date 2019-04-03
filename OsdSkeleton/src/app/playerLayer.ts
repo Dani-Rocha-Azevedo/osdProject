@@ -24,11 +24,11 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         this._assets = new Stack(this._assets)
         this._playingAsset = options.playingAsset
         this.playerStateFactory = new PlayerStateFactory()
-        this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getNext()})
+        this.playerState = this.playerStateFactory.makePlayer({ eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getNext() })
         this._template = require("ejs-compiled-loader!./playerLayer.ejs")
-        this.listenTo(this._playingAsset,'change:state', this._stateUpdated)
+        this.listenTo(this._playingAsset, 'change:state', this._stateUpdated)
         this._initEvent()
-        
+
     }
     render() {
         this.$el.html(this._template())
@@ -56,95 +56,125 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
      */
     private _next() {
         this.playerState.removeView()
-        this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getNext()})
+        this.playerState = this.playerStateFactory.makePlayer({ eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getNext() })
         this.$("#playerLayer").html(this.playerState.render().el)
         this.playerState.postRender()
         this.playerState.play()
     }
-     /**
-     * Demand to playerStateFactory a new PlayerState and give the previous asset to play
-     */
+    /**
+    * Demand to playerStateFactory a new PlayerState and give the previous asset to play
+    */
     private _previous() {
         this.playerState.removeView()
-        this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getPrevious()})
+        this.playerState = this.playerStateFactory.makePlayer({ eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getPrevious() })
         this.$("#playerLayer").html(this.playerState.render().el)
         this.playerState.postRender()
         this.playerState.play()
 
     }
-     /**
-     * Demand to playerState to play the asset 
-     */
+    /**
+    * Demand to playerState to play the asset 
+    */
     private _play() {
-        this.playerState = this.playerState.play()
+        try {
+            this.playerState = this.playerState.play()
+        } catch (err) {
+            console.log(err)
+        }
     }
     /**
      * Remove the playerView and return in the previous menu
      */
     private _stop() {
-        let playerStateTemp = this.playerState.stop()
-        if(playerStateTemp.constructor.name !==  this.playerState.constructor.name) {
-            this.playerState.removeView()
-            this.playerState = playerStateTemp
-            $("#playerLayer").html(this.playerState.render().el)
-            this.playerState.postRender()
-            //pass to liveChannel
-            this.playerState.play()
+        try {
+            let playerStateTemp = this.playerState.stop()
+            if (playerStateTemp.constructor.name !== this.playerState.constructor.name) {
+                this.playerState.removeView()
+                this.playerState = playerStateTemp
+                $("#playerLayer").html(this.playerState.render().el)
+                this.playerState.postRender()
+                //pass to liveChannel
+                this.playerState.play()
+            }
+            else {
+                this.playerState = playerStateTemp
+            }
+        } catch (err) {
+            console.log(err)
         }
-        else {
-            this.playerState = playerStateTemp
-        }
+
     }
     /**
      * Demand to playerState to pause the asset
      */
     private _pause() {
-        let playerStateTemp = this.playerState.pause()
-        if(playerStateTemp.constructor.name !==  this.playerState.constructor.name) {
-            this.playerState.removeView()
-            this.playerState = playerStateTemp
-            $("#playerLayer").html(this.playerState.render().el)
-            this.playerState.postRender()
-            this.playerState.pause()
+        try {
+            let playerStateTemp = this.playerState.pause()
+            if (playerStateTemp.constructor.name !== this.playerState.constructor.name) {
+                this.playerState.removeView()
+                this.playerState = playerStateTemp
+                $("#playerLayer").html(this.playerState.render().el)
+                this.playerState.postRender()
+                this.playerState.pause()
+            }
+            else {
+                this.playerState = playerStateTemp
+            }
+        } catch (err) {
+            console.log(err)
         }
-        else {
-            this.playerState = playerStateTemp
-        }
-        
+
+
     }
     /**
      * Demand to playerState to rewind the asset
      */
     private _fastBackward() {
-        let playerStateTemp = this.playerState.fastBackward()
-        if(playerStateTemp.constructor.name !==  this.playerState.constructor.name) {
-            this.playerState.removeView()
-            this.playerState = playerStateTemp
-            this.$("#playerLayer").html(this.playerState.render().el)
-            this.playerState.postRender()
-            this.playerState.fastBackward()
-        }
-        else {
-            this.playerState = playerStateTemp
+        try {
+            let playerStateTemp = this.playerState.fastBackward()
+            if (playerStateTemp.constructor.name !== this.playerState.constructor.name) {
+                this.playerState.removeView()
+                this.playerState = playerStateTemp
+                this.$("#playerLayer").html(this.playerState.render().el)
+                this.playerState.postRender()
+                this.playerState.fastBackward()
+            }
+            else {
+                this.playerState = playerStateTemp
+            }
+        } catch (err) {
+            console.log(err)
         }
     }
     /**
      * Demand to playerState to forward the asset 
      */
     private _fastForward() {
-        this.playerState = this.playerState.fastForward()
+        try {
+            this.playerState = this.playerState.fastForward()
+        } catch (err) {
+            console.log(err)
+        }
     }
     /**
      * Demand to player to jump on asset
      */
     private _jumpBackwardTime(time: number) {
-        this.playerState = this.playerState.jumpBackwardTime(time)
+        try {
+            this.playerState = this.playerState.jumpBackwardTime(time)
+        } catch (err) {
+            console.log(err)
+        }
     }
     /**
      * Demand to player to jump on asset
      */
     private _jumpForwardTime(time: number) {
-        this.playerState = this.playerState.jumpForwardTime(time)
+        try {
+            this.playerState = this.playerState.jumpForwardTime(time)
+        } catch (err) {
+            console.log(err)
+        }
     }
     /**
      * Launch when the state is updated
@@ -152,7 +182,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
      * The state isn't stopped, do nothing
      */
     private _stateUpdated() {
-        if(this._playingAsset.state == states.STOPPED) {
+        if (this._playingAsset.state == states.STOPPED) {
             //TODO if the playlist is in loop mode
             this._next()
         }
@@ -162,11 +192,11 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
      */
     private _refreshPlayerState() {
         this.playerState.removeView()
-        this.playerState = this.playerStateFactory.makePlayer({eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getCurrentAsset()})
+        this.playerState = this.playerStateFactory.makePlayer({ eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getCurrentAsset() })
         this.$("#playerLayer").html(this.playerState.render().el)
         this.playerState.postRender()
         this.playerState.play()
     }
-    
-   
+
+
 }
