@@ -8,6 +8,7 @@ import { IPlayerState } from '../IPlayerState';
 import { FrontEndTimeShift } from '../../models/assets/FrontEndTimeShift';
 import { FrontEndLiveChannel } from '../../models/assets/FrontEndLiveChannel';
 import { LiveChannelPlayerState } from '../LiveChannel/liveChannelPlayerState';
+import { LiveStateMachine } from '../LiveChannel/liveChannelStateMachine';
 export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implements IPlayerState {
 
     private _stateMachine: StateMachine
@@ -77,7 +78,7 @@ export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implemen
                 src: asset.src,
                 realTime: (<FrontEndLiveChannel>asset).getRealTime()
             }
-        })
+        }, new LiveStateMachine())
         return liveChannelPlayerState
     }
     public pause(): IPlayerState {

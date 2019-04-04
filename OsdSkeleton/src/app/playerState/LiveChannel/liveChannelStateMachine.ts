@@ -12,7 +12,7 @@ const validTransitions: Transitions<State> = {}
 validTransitions[states.STOPPED.label] = [states.PLAYING]
 validTransitions[states.PAUSED.label] = [states.PLAYING]
 
-export class StateMachine extends StateMachineImpl<State> {
+export class LiveStateMachine extends StateMachineImpl<State> {
     private interval: any
     constructor() {
         super(Object.values(states), validTransitions, states.PAUSED)

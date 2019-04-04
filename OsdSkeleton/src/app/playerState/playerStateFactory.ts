@@ -3,6 +3,7 @@ import {assetsType} from '../utils/constants'
 import { VideoPlayerState } from "./Video/videoPlayerState";
 import { LiveChannelPlayerState } from "./LiveChannel/liveChannelPlayerState";
 import { VideoStateMachine } from "./Video/videoStateMachine";
+import { LiveStateMachine } from "./LiveChannel/liveChannelStateMachine";
 export class  PlayerStateFactory {
     constructor(){}
     public makePlayer(options: any): IPlayerState {
@@ -11,7 +12,7 @@ export class  PlayerStateFactory {
                 return new VideoPlayerState(options, new VideoStateMachine())
             // Live channel
             default:
-                return new LiveChannelPlayerState(options)
+                return new LiveChannelPlayerState(options, new LiveStateMachine())
         }
     }
 }

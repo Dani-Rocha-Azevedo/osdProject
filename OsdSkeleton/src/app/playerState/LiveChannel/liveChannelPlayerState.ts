@@ -1,23 +1,26 @@
 import { IPlayerState } from "../IPlayerState";
 import { PlayingAsset } from "../../playingAsset";
 import { FrontEndLiveChannel } from "../../models/assets/FrontEndLiveChannel";
-import { StateMachine } from './liveChannelStateMachine'
+import { LiveStateMachine } from './liveChannelStateMachine'
 import { states } from "../../utils/constants";
 import * as Backbone from 'backbone'
 import { FrontEndTimeShift } from "../../models/assets/FrontEndTimeShift";
 import { TimeShiftPlayerState } from "../TimeShift/timeShiftPlayerState";
+import { fsm } from 'typescript-state-machine'
+import StateMachineImpl = fsm.StateMachineImpl
+import State = fsm.State
 export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>implements IPlayerState {
-    private _stateMachine: StateMachine
+    private _stateMachine: StateMachineImpl<State>
     private _template: any
     private _playingAsset: PlayingAsset
     private _interval?: any
     private _eventBus: any
     private _video: any
-    constructor(options: any) {
+    constructor(options: any, stateMachine: StateMachineImpl<State>) {
         super()
         this._template = require("ejs-compiled-loader!./liveChannelPlayerState.ejs")
         this._playingAsset = options.playingAsset
-        this._stateMachine = new StateMachine()
+        this._stateMachine = stateMachine
         //! get startTime, endTime by EPG
         let asset = new FrontEndLiveChannel(options.asset.description, options.asset.startTime, options.asset.endTime, options.asset.src, options.asset.realTime)
         this._playingAsset.asset = asset
@@ -33,7 +36,7 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
         this._handleChangeState()
     }
     public play(): IPlayerState {
-        this._stateMachine.play(this._video, (<FrontEndLiveChannel>this._playingAsset.asset).getRealTime())
+        (this._stateMachine as LiveStateMachine).play(this._video, (<FrontEndLiveChannel>this._playingAsset.asset).getRealTime())
         return this
     }
     public stop(): IPlayerState {

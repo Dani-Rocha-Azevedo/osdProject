@@ -32,7 +32,7 @@ describe('Tests a live channel', function () {
                 playingAsset: playingAsset,
                 asset: asset
             }
-            liveChannelPlayerState = new LiveChannelPlayerState(options)
+            liveChannelPlayerState = new LiveChannelPlayerState(options, new MockStateMachine())
             liveChannelPlayerState.postRender()
         })
         afterEach(function () {
@@ -53,10 +53,8 @@ describe('Tests a live channel', function () {
                 playingAsset: playingAsset,
                 asset: asset
             }
-            liveChannelPlayerState = new LiveChannelPlayerState(options)
+            liveChannelPlayerState = new LiveChannelPlayerState(options, new MockStateMachine())
             mockStateMachine = new MockStateMachine()
-            
-            sandbox.replace<any, any>(liveChannelPlayerState, '_stateMachine', mockStateMachine)
             liveChannelPlayerState.postRender()
             mockVideo = new MockVideo()
             sandbox.replace<any, any>(liveChannelPlayerState, '_video', mockVideo)
