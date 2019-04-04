@@ -24,7 +24,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
         this.playerStateFactory = new PlayerStateFactory()
         this.playerState = this.playerStateFactory.makePlayer({ eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getNext() })
         this._template = require("ejs-compiled-loader!./playerLayer.ejs")
-        this.listenTo(this._playingAsset, 'change:state', this._stateUpdated)
+        //this.listenTo(this._playingAsset, 'change:state', this._stateUpdated)
         this._initEvent()
 
     }
@@ -104,7 +104,7 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
                 this.playerState.play()
             }
             else {
-                this.playerState = playerStateTemp
+                this._next()
             }
         } catch (err) {
             console.log(err)
