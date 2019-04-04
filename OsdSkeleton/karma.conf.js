@@ -44,6 +44,7 @@ module.exports = function(config) {
                 }
               ]
             },
+            mode: 'development',
             node: {
               fs: 'empty'
             }

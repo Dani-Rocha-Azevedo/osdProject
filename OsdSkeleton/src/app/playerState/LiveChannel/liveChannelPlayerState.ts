@@ -23,7 +23,6 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
         this._playingAsset.asset = asset
         this._playingAsset.state = states.PAUSED
         this._eventBus = options.eventBus
-        this._handleChangeState()
     }
     public render(){
         this.$el.html(this._template({src: this._playingAsset.asset.src}))
@@ -31,6 +30,7 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
     }
     public postRender(): void{
         this._video = <HTMLMediaElement>document.getElementById('playerVideo')
+        this._handleChangeState()
     }
     public play(): IPlayerState {
         this._stateMachine.play(this._video, (<FrontEndLiveChannel>this._playingAsset.asset).getRealTime())
@@ -83,7 +83,7 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
         return this
     }
     
-    public _handleChangeState() {
+    private _handleChangeState() {
         this._stateMachine.onEnterState(states.PAUSED, ()=> {
             this._playingAsset.state = states.PAUSED
             

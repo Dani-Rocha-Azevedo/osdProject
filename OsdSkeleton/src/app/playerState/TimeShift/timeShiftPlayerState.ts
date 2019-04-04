@@ -19,6 +19,7 @@ export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implemen
     private _intervalRealTime: any
     private _intervalCurrentTime: any
     private _eventBus: any
+    private _video: any
 
 
     /**
@@ -35,7 +36,6 @@ export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implemen
         this._playingAsset.asset = options.asset
         this._playingAsset.speed = this._currentSpeedIndex
         this._eventBus = options.eventBus
-        this._handleChangeState()
     }
 
     public render() {
@@ -45,27 +45,25 @@ export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implemen
         return this
     }
     public postRender(): void {
-        let domVideo = <HTMLMediaElement>document.getElementById('playerVideo')
-        domVideo.currentTime = (<FrontEndTimeShift>this._playingAsset.asset).getCurrentTime()
+        this._handleChangeState()
+        this._video = <HTMLMediaElement>document.getElementById('playerVideo')
+        if(this._video) {
+            this._handleCurrentTime()
+        }
+        
+    }
+    private _handleCurrentTime() {
+        this._video.currentTime = (<FrontEndTimeShift>this._playingAsset.asset).getCurrentTime()
         this._intervalCurrentTime = setInterval(() => {
             let realTime: number = (<FrontEndTimeShift>this._playingAsset.asset).getRealTime();
             (<FrontEndTimeShift>this._playingAsset.asset).setRealTime(realTime + 1)
         }, 1000)
         this._intervalRealTime = setInterval(() => {
-
             this._bufferFinished()
         }, 10)
-
-
-
     }
     public play(): IPlayerState {
-        let domVideo = <HTMLMediaElement>document.getElementById('playerVideo')
-        try {
-            this._stateMachine.play(domVideo)
-        } catch (err) {
-            console.log(err)
-        }
+        this._stateMachine.play(this._video)
         return this
     }
     public stop(): IPlayerState {
@@ -83,59 +81,37 @@ export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implemen
         return liveChannelPlayerState
     }
     public pause(): IPlayerState {
-        let domVideo = <HTMLMediaElement>document.getElementById('playerVideo')
-        try {
-            this._stateMachine.pause(domVideo)
-        } catch (err) {
-            console.log(err)
-        }
+        this._stateMachine.pause(this._video)
         return this
     }
     public fastForward(): IPlayerState {
 
-        try {
-            let domVideo = <HTMLMediaElement>document.getElementById('playerVideo')
-            //It's not a successive click
-            if (this._stateMachine.state.label !== states.FASTFORWARDING.label) {
-                this._currentSpeedIndex = 0
-            }
-            this._currentSpeedIndex = Math.min(this._currentSpeedIndex + 1, this._speeds.length - 1)
-            this._stateMachine.fastForward(domVideo, this._speeds[this._currentSpeedIndex])
-        } catch (err) {
-            console.log(err)
+        //It's not a successive click
+        if (this._stateMachine.state.label !== states.FASTFORWARDING.label) {
+            this._currentSpeedIndex = 0
         }
+        this._currentSpeedIndex = Math.min(this._currentSpeedIndex + 1, this._speeds.length - 1)
+        this._stateMachine.fastForward(this._video, this._speeds[this._currentSpeedIndex])
+
         return this
     }
     public fastBackward(): IPlayerState {
-        try {
-            let domVideo = <HTMLMediaElement>document.getElementById('playerVideo')
-            //It's not a successive click
-            if (this._stateMachine.state.label !== states.BACKWARDING.label) {
-                this._currentSpeedIndex = 0
-            }
-            this._currentSpeedIndex = Math.min(this._currentSpeedIndex + 1, this._speeds.length - 1)
-            this._stateMachine.backward(domVideo, this._speeds[this._currentSpeedIndex])
-        } catch (err) {
-            console.log(err)
+
+        //It's not a successive click
+        if (this._stateMachine.state.label !== states.BACKWARDING.label) {
+            this._currentSpeedIndex = 0
         }
+        this._currentSpeedIndex = Math.min(this._currentSpeedIndex + 1, this._speeds.length - 1)
+        this._stateMachine.backward(this._video, this._speeds[this._currentSpeedIndex])
+
         return this
     }
-    public jumpBackwardTime(): IPlayerState {
-        try {
-            let domVideo = <HTMLMediaElement>document.getElementById('playerVideo')
-            this._stateMachine.jumpBackwardTime(domVideo, 15)
-        } catch (err) {
-            console.log(err)
-        }
+    public jumpBackwardTime(time: number): IPlayerState {
+        this._stateMachine.jumpBackwardTime(this._video, time)
         return this
     }
-    public jumpForwardTime(): IPlayerState {
-        try {
-            let domVideo = <HTMLMediaElement>document.getElementById('playerVideo')
-            this._stateMachine.jumpForwardTime(domVideo, 15)
-        } catch (err) {
-            console.log(err)
-        }
+    public jumpForwardTime(time: number): IPlayerState {
+        this._stateMachine.jumpForwardTime(this._video, time)
         return this
     }
     public removeView(): void {
@@ -183,8 +159,7 @@ export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implemen
 
     }
     private _bufferFinished() {
-        let domVideo = <HTMLMediaElement>document.getElementById('playerVideo')
-        if (domVideo.currentTime - 1 >= (<FrontEndTimeShift>this._playingAsset.asset).getRealTime()) {
+        if (this._video.currentTime - 1 >= (<FrontEndTimeShift>this._playingAsset.asset).getRealTime()) {
             this._eventBus.trigger('refreshPlayerState')
         }
     }

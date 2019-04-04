@@ -1,14 +1,18 @@
 import * as _ from 'underscore'
 import * as $ from 'jquery'
 import * as Backbone from 'backbone'
-import {StateMachine} from './videoStateMachine'
 import { PlayingAsset } from '../../playingAsset';
 import { FrontEndVideo } from '../../models/assets/FrontEndVideo';
 import {FrontEndAsset} from '../../models/assets/FrontEndAsset';
 import { states } from '../../utils/constants';
 import { IPlayerState } from '../IPlayerState';
+import { fsm } from 'typescript-state-machine'
+import StateMachineImpl = fsm.StateMachineImpl
+import State = fsm.State
+import { VideoStateMachine } from './videoStateMachine';
+
 export class VideoPlayerState extends Backbone.View<Backbone.Model> implements IPlayerState{
-    private _stateMachine: StateMachine
+    private _stateMachine: StateMachineImpl<State>
     private _template: any
     private _playingAsset: PlayingAsset
     private _interval?: any
@@ -19,10 +23,10 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
      * Constructor
      * Initialize the attributes and the state machine
      */
-    constructor(options: any) {
+    constructor(options: any, stateMachine: StateMachineImpl<State>) {
         super(options)
         this._template = require("ejs-compiled-loader!./videoPlayerState.ejs")
-        this._stateMachine = new StateMachine()
+        this._stateMachine = stateMachine
         this._speeds = [0, .05, .1, .15, .2, .25]
         this._currentSpeedIndex = 0
         this._playingAsset = options.playingAsset
@@ -56,15 +60,15 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
         return this
     }
     public play(): IPlayerState {
-        this._stateMachine.play(this._video)
+        (this._stateMachine as VideoStateMachine).play(this._video)
         return this
     }
     public stop(): IPlayerState  {
-        this._stateMachine.stop(this._video)
+        (this._stateMachine as VideoStateMachine).stop(this._video)
         return this
     }
     public pause(): IPlayerState {
-        this._stateMachine.pause(this._video)
+        (this._stateMachine as VideoStateMachine).pause(this._video)
         return this
     }
     public fastForward(): IPlayerState {
@@ -73,8 +77,8 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
         if(this._stateMachine.state.label !== states.FASTFORWARDING.label) {
             this._currentSpeedIndex = 0
         }
-        this._currentSpeedIndex = Math.min(this._currentSpeedIndex + 1, this._speeds.length - 1)
-        this._stateMachine.fastForward(this._video, this._speeds[this._currentSpeedIndex])
+        this._currentSpeedIndex = Math.min(this._currentSpeedIndex + 1, this._speeds.length - 1);
+        (this._stateMachine as VideoStateMachine).fastForward(this._video, this._speeds[this._currentSpeedIndex])
         return this
     }
     public fastBackward(): IPlayerState {
@@ -82,18 +86,18 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
         if(this._stateMachine.state.label !== states.BACKWARDING.label) {
            this._currentSpeedIndex = 0
         }
-        this._currentSpeedIndex = Math.min(this._currentSpeedIndex + 1, this._speeds.length - 1)
-        this._stateMachine.backward(this._video,this._speeds[this._currentSpeedIndex])
+        this._currentSpeedIndex = Math.min(this._currentSpeedIndex + 1, this._speeds.length - 1);
+        (this._stateMachine as VideoStateMachine).backward(this._video,this._speeds[this._currentSpeedIndex])
         return this
     }
 
     public jumpBackwardTime(time: number): IPlayerState {
-        this._stateMachine.jumpBackwardTime(this._video, time)
+        (this._stateMachine as VideoStateMachine).jumpBackwardTime(this._video, time)
         return this
     }
 
     public jumpForwardTime(time: number): IPlayerState {
-        this._stateMachine.jumpForwardTime(this._video, time)
+        (this._stateMachine as VideoStateMachine).jumpForwardTime(this._video, time)
         return this
     }
     public removeView(): void {
@@ -111,15 +115,12 @@ export class VideoPlayerState extends Backbone.View<Backbone.Model> implements I
      */
     private _videoEnded() {
         try {
-            this._stateMachine.stop(this._video)
+            (this._stateMachine as VideoStateMachine).stop(this._video)
         }catch(err) {
             console.log(err)
         } 
     }
-    /**
-     * public for testing
-     */
-    public _handleChangeState() {
+    private _handleChangeState() {
         this._stateMachine.onEnterState(states.PAUSED, ()=> {
             this._playingAsset.state = states.PAUSED
             this._currentSpeedIndex = 0

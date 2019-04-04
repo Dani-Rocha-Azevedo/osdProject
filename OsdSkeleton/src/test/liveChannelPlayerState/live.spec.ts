@@ -57,7 +57,6 @@ describe('Tests a live channel', function () {
             mockStateMachine = new MockStateMachine()
             
             sandbox.replace<any, any>(liveChannelPlayerState, '_stateMachine', mockStateMachine)
-            liveChannelPlayerState._handleChangeState()
             liveChannelPlayerState.postRender()
             mockVideo = new MockVideo()
             sandbox.replace<any, any>(liveChannelPlayerState, '_video', mockVideo)
@@ -65,6 +64,7 @@ describe('Tests a live channel', function () {
         })
         afterEach(function () {
             liveChannelPlayerState.removeView()
+            sandbox.restore()
         })
         //####################################### TEST PLAY #################################################
         /**

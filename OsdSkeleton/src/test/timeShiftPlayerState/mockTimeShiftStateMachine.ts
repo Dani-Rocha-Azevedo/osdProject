@@ -1,12 +1,8 @@
 import { fsm } from 'typescript-state-machine'
 import State = fsm.State
-import * as $ from 'jquery'
 import StateMachineImpl = fsm.StateMachineImpl
 import Transitions = fsm.Transitions
 import checkStateIn = fsm.CheckStateIn
-import { stat, promises } from 'fs';
-import { REFUSED } from 'dns';
-import { StateMachine } from '../stateMachine';
 
 /**
 * The differents States
@@ -28,7 +24,7 @@ validTransitions[states.PAUSED.label] = [states.PLAYING, states.BACKWARDING, sta
 validTransitions[states.BACKWARDING.label] = [states.PLAYING, states.PAUSED, states.FASTFORWARDING, states.STOPPED, states.BACKWARDING]
 validTransitions[states.FASTFORWARDING.label] = [states.PLAYING, states.PAUSED, states.BACKWARDING, states.STOPPED, states.FASTFORWARDING]
 
-export class VideoStateMachine extends StateMachineImpl<State> implements StateMachine{
+export class MockStateMachine extends StateMachineImpl<State> {
     private interval: any
     constructor() {
         super(Object.values(states), validTransitions, states.PAUSED)
@@ -37,113 +33,48 @@ export class VideoStateMachine extends StateMachineImpl<State> implements StateM
      * start the content
      */
     @checkStateIn([states.STOPPED, states.PAUSED, states.BACKWARDING, states.FASTFORWARDING], "you can't launch content in playing state")
-    public play(video: HTMLMediaElement): void {
-        try {
-            if (this.interval) {
-                clearInterval(this.interval)
-            }
-            video.playbackRate = 1
-            video.play().then(() => {
-                this.setState(states.PLAYING)
-            }).catch(()=> {
-                console.log(video.readyState)
-            })
-
-        }catch(err) {
-            throw new Error("video play: "+err)
-        }
-       
+    public play(video: any): void {
+        this.setState(states.PLAYING)
     }
 
     /**
      * Stop the content
      */
     @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't stop content in stopped state")
-    public stop(video: HTMLMediaElement): void {
-        //TODO handle stop video
-        try {
-            if (this.interval) {
-                clearInterval(this.interval)
-            }
-            // reload the video
-            video.load()
-            video.pause()
-            this.setState(states.STOPPED)
-        }catch(err) {
-            throw new Error("video stop: "+err)
-        }
+    public stop(): void {
+        this.setState(states.STOPPED)
     }
     /**
      * pause the content
      */
     @checkStateIn([states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't pause content in stopped/paused state")
-    public pause(video: HTMLMediaElement): void {
-        try{
-            if (this.interval) {
-                clearInterval(this.interval)
-            }
-            video.playbackRate = 1
-            video.pause()
-            this.setState(states.PAUSED)
-        }catch(err) {
-            throw new Error("video pause: "+err)
-        }
-        
-
+    public pause(video: any): void {
+        this.setState(states.PAUSED)
     }
 
     /**
      * Fast forward the content
      */
     @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't fast forward content in stopped state")
-    public fastForward(video: HTMLMediaElement, speed: number): void {
-        try{
-            this.setState(states.FASTFORWARDING)
-            if (this.interval) {
-                clearInterval(this.interval)
-            }
-            this.interval = setInterval(() => {
-                video.currentTime += speed
-            }, 10)
-        }catch(err) {
-            throw new Error("video Forward: "+err)
-        }
-        
+    public fastForward(video: any, speed: number): void {
+        this.setState(states.FASTFORWARDING)
     }
 
     /**
      * Backward the content
      */
     @checkStateIn([states.PAUSED, states.BACKWARDING, states.FASTFORWARDING, states.PLAYING], "you can't rewind content in stopped state")
-    public backward(video: HTMLMediaElement, speed: number): void {
-        try {
-            this.setState(states.BACKWARDING)
-            if (this.interval) {
-                clearInterval(this.interval)
-            }
-            this.interval = setInterval(() => {
-                // at the beginning of movie
-                if (video.currentTime == 0) {
-                    this.pause(video)
-                }
-                else {
-                    video.currentTime += -speed
-                    video.play()
-                }
-            }, 10)
-        }catch(err) {
-            throw new Error("video Backward")
-        }
-        
+    public backward(video: any, speed: number): void {
+        this.setState(states.BACKWARDING)
     }
     /**
      * Jump on the content
      */
     @checkStateIn([states.PAUSED, states.PLAYING], "you can't jumpBackward content in stopped/Forwarding/backwarding state")
-    public jumpBackwardTime(video: HTMLMediaElement, position: number): void {
+    public jumpBackwardTime(video: any, position: number): void {
         try {
             video.currentTime -= position
-        }catch(err) {
+        } catch (err) {
             throw new Error("video Jump Backward")
         }
     }
@@ -151,10 +82,10 @@ export class VideoStateMachine extends StateMachineImpl<State> implements StateM
      * Jump on the content
      */
     @checkStateIn([states.PAUSED, states.PLAYING], "you can't jumpForward content in stopped/Forwarding/backwarding state")
-    public jumpForwardTime(video: HTMLMediaElement, position: number): void {
+    public jumpForwardTime(video: any, position: number): void {
         try {
             video.currentTime += position
-        }catch(err) {
+        } catch (err) {
             throw new Error("video Jump Backward")
         }
     }

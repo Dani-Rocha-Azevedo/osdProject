@@ -1,10 +1,8 @@
 import * as $ from 'jquery'
 import * as _ from 'underscore'
 
-import { VideoPlayerState } from './playerState/Video/videoPlayerState';
 import * as Backbone from 'backbone'
 import { PlayingAsset } from './playingAsset';
-import { OsdLayer } from './osd/osdLayer';
 import { IPlayerState } from './playerState/IPlayerState';
 import { PlayerStateFactory } from './playerState/playerStateFactory';
 import { Stack } from './utils/stack';
@@ -55,21 +53,30 @@ export class PlayerLayer extends Backbone.View<Backbone.Model>{
      * Demand to playerStateFactory a new PlayerState and give the next asset to play
      */
     private _next() {
-        this.playerState.removeView()
-        this.playerState = this.playerStateFactory.makePlayer({ eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getNext() })
-        this.$("#playerLayer").html(this.playerState.render().el)
-        this.playerState.postRender()
-        this.playerState.play()
+        try {
+            this.playerState.removeView()
+            this.playerState = this.playerStateFactory.makePlayer({ eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getNext() })
+            this.$("#playerLayer").html(this.playerState.render().el)
+            this.playerState.postRender()
+            this.playerState.play()
+        }catch(err) {
+            console.log(err.message)
+        }
+        
     }
     /**
     * Demand to playerStateFactory a new PlayerState and give the previous asset to play
     */
     private _previous() {
-        this.playerState.removeView()
-        this.playerState = this.playerStateFactory.makePlayer({ eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getPrevious() })
-        this.$("#playerLayer").html(this.playerState.render().el)
-        this.playerState.postRender()
-        this.playerState.play()
+        try {
+            this.playerState.removeView()
+            this.playerState = this.playerStateFactory.makePlayer({ eventBus: this._eventBus, playingAsset: this._playingAsset, asset: this._assets.getPrevious() })
+            this.$("#playerLayer").html(this.playerState.render().el)
+            this.playerState.postRender()
+            this.playerState.play()
+        }catch(err) {
+            console.log(err.message)
+        }
 
     }
     /**

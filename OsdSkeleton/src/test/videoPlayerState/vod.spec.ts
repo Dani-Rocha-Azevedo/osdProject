@@ -8,6 +8,7 @@ import { states } from "../../app/utils/constants";
 import { MockStateMachine } from './mockVideoStateMachine'
 import sinon from "sinon";
 import { MockVideo } from "./mockVideo";
+import { resolve } from "path";
 
 describe('Tests a VOD', function () {
     let asset =
@@ -29,7 +30,7 @@ describe('Tests a VOD', function () {
                 asset: asset,
                 playingAsset: playingAsset
             }
-            videoPlayerState = new VideoPlayerState(options)
+            videoPlayerState = new VideoPlayerState(options, new MockStateMachine())
             videoPlayerState.postRender()
         })
         afterEach(function () {
@@ -56,12 +57,9 @@ describe('Tests a VOD', function () {
                 asset: asset,
                 playingAsset: playingAsset
             }
-            videoPlayerState = new VideoPlayerState(options)
+            videoPlayerState = new VideoPlayerState(options, new MockStateMachine())
             mockStateMachine = new MockStateMachine()
-            sandbox.replace<any, any>(videoPlayerState, "_stateMachine", mockStateMachine)
-            videoPlayerState._handleChangeState()
             videoPlayerState.postRender()
-
         })
         afterEach(function () {
 
@@ -228,7 +226,7 @@ describe('Tests a VOD', function () {
          * expect a error, can't pause a content after stop the content
          */
         it('Pause a video after stop', function () {
-
+            
             try {
                 videoPlayerState.stop()
                 videoPlayerState.pause()
