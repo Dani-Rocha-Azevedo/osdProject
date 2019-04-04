@@ -364,16 +364,10 @@ describe('Test the timeShift playerState', function () {
      */
     it('Jump forward a timeShitfAsset after pause', function (done) {
         this.timeout(3000)
-        try {
-            timeShiftPlayerState.play()
-            timeShiftPlayerState.pause()
-            timeShiftPlayerState.jumpForwardTime(20)
-            timeShiftPlayerState.jumpForwardTime(20)
-        }
-        catch (err) {
-            console.log(err.message)
-            assert.isTrue(false)
-        }
+        timeShiftPlayerState.play()
+        timeShiftPlayerState.pause()
+        timeShiftPlayerState.jumpForwardTime(20)
+        timeShiftPlayerState.jumpForwardTime(20)
         setTimeout(() => {
             assert.equal(mockVideo.currentTime, 70)
             assert.equal(playingAsset.state.label, states.PAUSED.label)
@@ -384,29 +378,17 @@ describe('Test the timeShift playerState', function () {
      * Jump forward a content after fast backward : KO
      */
     it('Jump forward a timeShitfAsset after fast backward', function () {
-        try {
-            timeShiftPlayerState.fastBackward()
-            timeShiftPlayerState.jumpForwardTime(20)
-            timeShiftPlayerState.jumpForwardTime(20)
-        }
-        catch (err) {
-            assert.equal(err.message, "you can't jumpForward content in stopped/Forwarding/backwarding state")
-            assert.equal(playingAsset.state.label, states.BACKWARDING.label)
-        }
+        timeShiftPlayerState.fastBackward()
+        expect(() => { timeShiftPlayerState.jumpForwardTime(20) }).to.throw()
+        assert.equal(playingAsset.state.label, states.BACKWARDING.label)
     })
     /**
     * Jump forward a content after fast forward : KO
     */
     it('Jump forward a timeShitfAsset after fast forward', function () {
-        try {
-            timeShiftPlayerState.fastForward()
-            timeShiftPlayerState.jumpForwardTime(20)
-            timeShiftPlayerState.jumpForwardTime(20)
-        }
-        catch (err) {
-            assert.equal(err.message, "you can't jumpForward content in stopped/Forwarding/backwarding state")
-            assert.equal(playingAsset.state.label, states.FASTFORWARDING.label)
-        }
+        timeShiftPlayerState.fastForward()
+        expect(() => { timeShiftPlayerState.jumpForwardTime(20)}).to.throw()
+        assert.equal(playingAsset.state.label, states.FASTFORWARDING.label)
     })
     /**
      * Jump forward a content after STOP : KO
