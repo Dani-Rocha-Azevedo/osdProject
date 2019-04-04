@@ -27,7 +27,7 @@ validTransitions[states.PAUSED.label] = [states.PLAYING, states.BACKWARDING, sta
 validTransitions[states.BACKWARDING.label] = [states.PLAYING, states.PAUSED, states.FASTFORWARDING, states.STOPPED, states.BACKWARDING]
 validTransitions[states.FASTFORWARDING.label] = [states.PLAYING, states.PAUSED, states.BACKWARDING, states.STOPPED, states.FASTFORWARDING]
 
-export class StateMachine extends StateMachineImpl<State> {
+export class TimeShiftStateMachine extends StateMachineImpl<State> {
     private interval: any
     constructor() {
         super(Object.values(states), validTransitions, states.PLAYING)

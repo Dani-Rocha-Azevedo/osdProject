@@ -37,8 +37,7 @@ describe('Test the timeShift playerState', function () {
         }
         mockVideo = new MockVideo()
         mockStateMachine = new MockStateMachine()
-        timeShiftPlayerState = new TimeShiftPlayerState(options)
-        sandbox.replace<any, any>(timeShiftPlayerState, '_stateMachine', mockStateMachine)
+        timeShiftPlayerState = new TimeShiftPlayerState(options, new MockStateMachine())
         timeShiftPlayerState.postRender()
         sandbox.replace<any, any>(timeShiftPlayerState, '_video', mockVideo)
         timeShiftPlayerState['_handleCurrentTime']() // private function

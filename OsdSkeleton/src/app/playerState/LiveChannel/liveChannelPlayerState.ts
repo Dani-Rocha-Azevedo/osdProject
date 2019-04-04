@@ -9,6 +9,7 @@ import { TimeShiftPlayerState } from "../TimeShift/timeShiftPlayerState";
 import { fsm } from 'typescript-state-machine'
 import StateMachineImpl = fsm.StateMachineImpl
 import State = fsm.State
+import { TimeShiftStateMachine } from "../TimeShift/timeShiftStateMachine";
 export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>implements IPlayerState {
     private _stateMachine: StateMachineImpl<State>
     private _template: any
@@ -49,7 +50,7 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
         let asset = <FrontEndLiveChannel>this._playingAsset.asset
         let timeShiftAsset = new FrontEndTimeShift(asset.description, asset.getStartTime(), asset.getEndTime(),
                 asset.src, this._video.currentTime)
-        return new TimeShiftPlayerState({eventBus:this._eventBus, playingAsset: this._playingAsset, asset: timeShiftAsset, state: states.PAUSED})
+        return new TimeShiftPlayerState({eventBus:this._eventBus, playingAsset: this._playingAsset, asset: timeShiftAsset, state: states.PAUSED}, new TimeShiftStateMachine())
     }
     public fastForward(): IPlayerState {
         throw new Error("You can't fast forward a live channel")
@@ -61,7 +62,7 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
         let asset = <FrontEndLiveChannel>this._playingAsset.asset
         let timeShiftAsset = new FrontEndTimeShift(asset.description, asset.getStartTime(), asset.getEndTime(),
                 asset.src, this._video.currentTime)
-        return new TimeShiftPlayerState({eventBus:this._eventBus, playingAsset: this._playingAsset, asset: timeShiftAsset, state: states.BACKWARDING})
+        return new TimeShiftPlayerState({eventBus:this._eventBus, playingAsset: this._playingAsset, asset: timeShiftAsset, state: states.BACKWARDING}, new TimeShiftStateMachine())
     }
     /**
      * Jump backward
@@ -70,7 +71,7 @@ export class LiveChannelPlayerState extends Backbone.View<Backbone.Model>impleme
         let asset = <FrontEndLiveChannel>this._playingAsset.asset
         let timeShiftAsset = new FrontEndTimeShift(asset.description, asset.getStartTime(), asset.getEndTime(),
                 asset.src, this._video.currentTime - time)
-        return new TimeShiftPlayerState({eventBus:this._eventBus, playingAsset: this._playingAsset, asset: timeShiftAsset, state: states.PLAYING})
+        return new TimeShiftPlayerState({eventBus:this._eventBus, playingAsset: this._playingAsset, asset: timeShiftAsset, state: states.PLAYING}, new TimeShiftStateMachine())
     }
     /**
      * Never used in a liveChannel asset

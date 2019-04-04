@@ -1,7 +1,7 @@
 import * as _ from 'underscore'
 import * as $ from 'jquery'
 import * as Backbone from 'backbone'
-import { StateMachine } from './timeShiftStateMachine'
+import { TimeShiftStateMachine } from './timeShiftStateMachine'
 import { PlayingAsset } from '../../playingAsset';
 import { states } from '../../utils/constants';
 import { IPlayerState } from '../IPlayerState';
@@ -9,9 +9,12 @@ import { FrontEndTimeShift } from '../../models/assets/FrontEndTimeShift';
 import { FrontEndLiveChannel } from '../../models/assets/FrontEndLiveChannel';
 import { LiveChannelPlayerState } from '../LiveChannel/liveChannelPlayerState';
 import { LiveStateMachine } from '../LiveChannel/liveChannelStateMachine';
+import { fsm } from 'typescript-state-machine'
+import StateMachineImpl = fsm.StateMachineImpl
+import State = fsm.State
 export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implements IPlayerState {
 
-    private _stateMachine: StateMachine
+    private _stateMachine: StateMachineImpl<State>
     private _template: any
     private _playingAsset: PlayingAsset
     private _interval?: any
@@ -27,10 +30,10 @@ export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implemen
      * Constructor
      * Initialize the attributes and the state machine
      */
-    constructor(options: any) {
+    constructor(options: any, stateMachine: StateMachineImpl<State>) {
         super(options)
         this._template = require("ejs-compiled-loader!./timeShiftPlayerState.ejs")
-        this._stateMachine = new StateMachine()
+        this._stateMachine = stateMachine
         this._speeds = [0, .1, .2, .25, .3, .35]
         this._currentSpeedIndex = 0
         this._playingAsset = options.playingAsset
@@ -64,7 +67,7 @@ export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implemen
         }, 10)
     }
     public play(): IPlayerState {
-        this._stateMachine.play(this._video)
+        (this._stateMachine as TimeShiftStateMachine).play(this._video)
         return this
     }
     public stop(): IPlayerState {
@@ -82,7 +85,7 @@ export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implemen
         return liveChannelPlayerState
     }
     public pause(): IPlayerState {
-        this._stateMachine.pause(this._video)
+        (this._stateMachine as TimeShiftStateMachine).pause(this._video)
         return this
     }
     public fastForward(): IPlayerState {
@@ -91,8 +94,8 @@ export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implemen
         if (this._stateMachine.state.label !== states.FASTFORWARDING.label) {
             this._currentSpeedIndex = 0
         }
-        this._currentSpeedIndex = Math.min(this._currentSpeedIndex + 1, this._speeds.length - 1)
-        this._stateMachine.fastForward(this._video, this._speeds[this._currentSpeedIndex])
+        this._currentSpeedIndex = Math.min(this._currentSpeedIndex + 1, this._speeds.length - 1);
+        (this._stateMachine as TimeShiftStateMachine).fastForward(this._video, this._speeds[this._currentSpeedIndex])
 
         return this
     }
@@ -102,17 +105,17 @@ export class TimeShiftPlayerState extends Backbone.View<Backbone.Model> implemen
         if (this._stateMachine.state.label !== states.BACKWARDING.label) {
             this._currentSpeedIndex = 0
         }
-        this._currentSpeedIndex = Math.min(this._currentSpeedIndex + 1, this._speeds.length - 1)
-        this._stateMachine.backward(this._video, this._speeds[this._currentSpeedIndex])
+        this._currentSpeedIndex = Math.min(this._currentSpeedIndex + 1, this._speeds.length - 1);
+        (this._stateMachine as TimeShiftStateMachine).backward(this._video, this._speeds[this._currentSpeedIndex])
 
         return this
     }
     public jumpBackwardTime(time: number): IPlayerState {
-        this._stateMachine.jumpBackwardTime(this._video, time)
+        (this._stateMachine as TimeShiftStateMachine).jumpBackwardTime(this._video, time)
         return this
     }
     public jumpForwardTime(time: number): IPlayerState {
-        this._stateMachine.jumpForwardTime(this._video, time)
+        (this._stateMachine as TimeShiftStateMachine).jumpForwardTime(this._video, time)
         return this
     }
     public removeView(): void {
