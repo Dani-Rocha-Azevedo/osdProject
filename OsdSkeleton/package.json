@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "karma start ./karma.conf.js",
-    "start": "webpack-dev-server --content-base ./dist"
+    "start": "webpack-dev-server --content-base ./dist",
+    "test-end-to-end": "cucumber-js",
+    "ci": "start-server-and-test start http://localhost:8080 test-end-to-end"
+
   },
   "author": "",
   "license": "ISC",
@@ -18,13 +21,16 @@
     "@types/sinon": "^7.0.11",
     "@types/underscore": "^1.8.13",
     "chai": "^4.2.0",
+    "cucumber": "^5.1.0",
     "istanbul-instrumenter-loader": "^3.0.1",
     "karma-chrome-launcher": "^2.2.0",
     "karma-coverage-istanbul-reporter": "^2.0.4",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^3.0.5",
     "mocha": "^6.0.2",
+    "selenium-webdriver": "^4.0.0-alpha.1",
     "sinon": "^7.3.1",
+    "start-server-and-test": "^1.7.13",
     "ts-loader": "^5.3.3",
     "ts-node": "^8.0.3",
     "typescript": "^3.4.1",
