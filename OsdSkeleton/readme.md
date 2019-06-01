@@ -2,9 +2,7 @@
 Le prototype OSD, est une application web permettant la visualisation de certains flux, avec menu à l’écran en superposition.
 ## Prérequis
 Ce dont vous avez besoin pour lancer l'application : 
-### installer nodeJS 8v ou plus
-#### sous Windows
-https://nodejs.org/en/download/
+### Installer nodeJS 8v ou plus
 #### sous Linux
 ```
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
@@ -16,6 +14,7 @@ Vérifiez la version de node
 ```
 node -v
 ```
+### Installer google chrome pour les tests
 ## Installation
 ```
 npm i
